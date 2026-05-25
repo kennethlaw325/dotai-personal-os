@@ -1,0 +1,14 @@
+[
+  {
+    "date": "2026-05-23",
+    "content": "# 2026-05-23 Daily\n\n## Reflection\n\n5/22 punch list 留低嘅 follow-up #3 收尾。gh pr merge --squash --delete-branch 三條 PR 全 merge。AK chrome-flow.md spec tighten 解答完。"
+  },
+  {
+    "date": "2026-05-24",
+    "content": "# 2026-05-24 Daily\n\n## Reflection\n\n朝早撞 Discord 400 hotfix → Architecture B 切換成功；下午一連 ship Phase 2/3/4/5 + Sunday Pipeline wire；evening 同 Jimmy align Level 2 dashboard 架構。"
+  },
+  {
+    "date": "2026-05-25",
+    "content": "# 2026-05-25 Daily\n\n## Today's Plan\n\n排序入 frontmatter `task_ids` 由 sync script 拎；同學亦可以用 `[[t-001]]` 寫 inline 由 script regex 食。\n\n## Reflection\n\n朝早 8:00 第一次 Vault-Lint-Daily auto-fire 觀察 — Section 1 sparkline + Graphify staleness alert 有冇 surface 真嘢。Phase 1 SB+DB 落地 14 日 re-eval gate 6/8 倒數中。\n\n## Inline checkbox tasks（Obsidian Tasks plugin syntax）\n\n- [ ] Email Jimmy confirm Level 2 deploy review feedback\n- [/] 整理 Day 1 H3 reading list demo prep\n- [x] Push level-2-skeleton 改動到 GitHub fork\n- [ ] 視乎 Q4.1 confirm 再加 pre-class checklist 改動"
+  }
+]

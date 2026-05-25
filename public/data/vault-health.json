@@ -1,0 +1,22 @@
+{
+  "inboxCount": 2,
+  "orphanCount": 3,
+  "recentAtomNotes": [
+    {
+      "title": "SB+DB Phase 1 ship",
+      "date": "2026-05-24",
+      "path": "30 - Notes/2026-05-24 SB+DB Phase 1 ship.md"
+    },
+    {
+      "title": "techpulse-curator 3 PR squash merge",
+      "date": "2026-05-23",
+      "path": "30 - Notes/2026-05-23 techpulse-curator 3 PR squash merge.md"
+    },
+    {
+      "title": "BAI paused",
+      "date": "2026-05-22",
+      "path": "30 - Notes/2026-05-22 BAI paused.md"
+    }
+  ],
+  "lastSyncedAt": "2026-05-25T08:35:55.905Z"
+}

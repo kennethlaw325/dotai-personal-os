@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<title>Level 2 Skeleton — Implementation Notes</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; max-width: 920px; margin: 2rem auto; padding: 0 1rem; line-height: 1.55; color: #11243a; background: #f6f8fb; }
+h1 { border-bottom: 2px solid #003153; padding-bottom: 0.4rem; }
+h2 { color: #003153; margin-top: 2.2rem; border-left: 4px solid #3b82f6; padding-left: 0.6rem; }
+h3 { color: #11243a; margin-top: 1.4rem; }
+h4 { color: #66758a; margin-top: 1.1rem; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+code { background: #e6edf5; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.9em; }
+pre { background: #11243a; color: #f6f8fb; padding: 0.9rem; border-radius: 8px; overflow-x: auto; font-size: 0.85em; }
+blockquote { border-left: 3px solid #f59e0b; padding: 0.4rem 0.8rem; background: #fff7e6; margin: 0.8rem 0; }
+.status-shipped { color: #16a34a; font-weight: 600; }
+.status-wip { color: #f59e0b; font-weight: 600; }
+.status-blocked { color: #dc2626; font-weight: 600; }
+.status-open { color: #66758a; font-weight: 600; }
+table { border-collapse: collapse; width: 100%; margin: 0.8rem 0; }
+th, td { border: 1px solid #e6edf5; padding: 0.5rem 0.7rem; text-align: left; font-size: 0.9rem; }
+th { background: #e6edf5; }
+ul { margin: 0.6rem 0; }
+</style>
+</head>
+<body>
+<h1>Level 2 Skeleton — Implementation Notes</h1>
+<p><strong>建立日期</strong>：2026-05-25 HKT，autonomous overnight build per SPEC。</p>
+<p><strong>Final status</strong>：<span class="status-shipped">✅ ALL 4 PHASES SHIPPED + VERIFIED</span> — 1100+ 字 SPEC 解讀、5-view scaffold、vault-bridge sync script、12 個 teaching doc、npm install/sync/build/dev/preview 五條 verify command 全 green。</p>
+<p><strong>SPEC 摘要</strong>：起 Codex 網課 Level 2 教材；workflow-first 教學，唔教全端 detail；用 3-feature minimum (Capture/Plan/Reflect) 做 base 加 2 個 on-top feature；前端部署 (localhost prod build per 5/24 align)；Obsidian 做 DB；GitHub 基礎教學；verify 跑得起先算成功；唔修改 Jimmy repo code (build NEW scaffold)。</p>
+
+<h2>Phase 0：Scope + Architecture Lock</h2>
+<p class="status-shipped">✅ Shipped</p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>Skeleton 位置</strong>：擺喺 <code>C:/Users/Kenneth/Claude/dotai-personal-os/</code>。喺 Kenneth fork 下面，方便對比 Jimmy 5-view monolith；唔 push 上 GitHub 直至 Kenneth approve。</li>
+<li><strong>Stack</strong>：Vite + React 18 + TypeScript + Tailwind v3 + Lucide icons。TS 揀 strict mode（學員學 type safety，AI coding 配 strict 更好）。Tailwind v3 唔 v4 — v4 嘅 dark mode 仲未 stable on production presets (per <code>feedback_tailwind_v4_dark_mode</code>)。</li>
+<li><strong>Routing</strong>：用 <code>useState</code> 切 view，唔用 React Router。5 view 細到 routing library 係 overkill；學員學 conditional rendering 比學 Router config 對 personal OS 更實用。</li>
+<li><strong>Data 層</strong>：<code>public/data/*.json</code> 靜態文件，Vite serves。Frontend 用 <code>fetch('/data/tasks.json')</code> 讀。冇 backend (per 5/24「localhost only」decision + SPEC「唔修改 code」implies 唔起 Express)。</li>
+<li><strong>Obsidian → JSON pipeline</strong>：兩條 path
+<ol>
+<li><strong>Path A：Node sync script</strong>（<code>scripts/sync-vault.mjs</code>）— teaching-friendly，每行 code 學員睇得明。用 <code>gray-matter</code> 食 frontmatter，<code>fast-glob</code> 揀檔。Run via <code>npm run sync:vault</code>。</li>
+<li><strong>Path B：Obsidian MCP</strong>（教學 Day 1 H2 用）— Codex Desktop + Obsidian MCP 一句 prompt 出 JSON。寫入 teaching doc 做 default Day 1 demo（learning peak wow moment）。</li>
+</ol>
+</li>
+<li><strong>Base + on-top feature 揀法</strong>：3 base (Today / Tasks / Daily Note) per 我嘅 redesign。2 on-top揀「Vault Health」+「Content Pipeline」— match Kenneth memory：(a) SB+DB 系統剛 ship 5 phase，Vault Health surface inbox/orphan/recent atom，Kenneth 已用緊 <code>vault-lint-daily.ps1</code> Morning Brief；(b) TechPulse / Threads / X / IG / XHS = #1 daily work，Content Pipeline surface drafts status。</li>
+<li><strong>「部署」定義</strong>：<code>npm run build</code> + <code>npm run preview</code> 出 localhost:4173 production bundle。沿 5/24 client align「localhost only / 唔用 Cloud Codex」。教學 doc 另寫 cloud deploy (Vercel) 做 bonus / Level 3 teaser。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li>SPEC 寫「以上工作不涉及修改 code」— 解讀為「唔修改 Jimmy 既有 5478-line App.jsx 等」而非「完全唔寫 code」。原因：SPEC #1「前端用個人 os 做 base，要部署埋」+ SPEC #4「要驗證完係 work 先算成功」implies 必須有 runnable code 先 verify。如果解讀錯，請 morning review 時 flag — Q0.1。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<table>
+<tr><th>替代方案</th><th>揀咗咩</th><th>為何</th></tr>
+<tr><td>Next.js full-stack</td><td>Vite + React SPA</td><td>Level 2 教 personal OS workflow，唔教 SSR / server actions。Vite 起手快 30s vs Next 90s，學員「立即見到嘢」嘅 wow moment 更早。</td></tr>
+<tr><td>Express backend + SQLite</td><td>Static JSON files</td><td>Jimmy 用 Express+SQLite 已 prove 過 work 但係 5478-line monolith。Static JSON 教「file as DB」嘅 vault-driven mental model，符合 SPEC「Obsidian 做 DB」要求。Backend = future Phase 2 enhancement。</td></tr>
+<tr><td>Obsidian MCP only (no sync script)</td><td>Both — sync script 主、MCP doc 為 Day 1 H2 advanced demo</td><td>學員 Day 1 H1 唔一定 setup MCP 就要見到 dashboard 跑得起，所以 Path A (sync script) 做 baseline；Day 1 H2 加 MCP 做 wow moment。Production 用 A，rapid prototype 用 B。</td></tr>
+<tr><td>5 view 全部 ship</td><td>3 base + 2 on-top = 5 view</td><td>同 SPEC「on top 加一啲功能」一致；保住 base trio 教 closed loop 概念，2 on-top 教「workflow customization」。</td></tr>
+<tr><td>React Router</td><td><code>useState</code> conditional render</td><td>5 view 規模 routing 係 overkill，學員學 hooks 比學 Router config 更可遷移。</td></tr>
+<tr><td>Zustand / Redux state</td><td>Plain useState + lift-up</td><td>無 cross-view state；data fetch on view mount。學員學 useState + useEffect 已足夠。</td></tr>
+</table>
+
+<h4>開放式問題</h4>
+<ul>
+<li><strong>Q0.1</strong>：「以上工作不涉及修改 code」係咪指唔寫任何 production code 只寫教材？我解讀為「唔 hack Jimmy 原 repo，但 build NEW scaffold OK」。如果要純 teaching doc no code，會大改 Phase 1 + 3 範圍。</li>
+<li><strong>Q0.2</strong>：On-top feature 揀咗 Vault Health + Content Pipeline，仲有候選 Project Status / Watchlist (TSLL/NVDA) / Knowledge — 你想換邊個？</li>
+<li><strong>Q0.3</strong>：教學節奏沿 5/24 align「Day 1 4hr + Day 2 4hr = 8hr」？仲係要 condense 短啲？</li>
+<li><strong>Q0.4</strong>：學員 vault schema 樣板要包邊幾個 entity？我預咗 tasks (frontmatter) / daily note / drafts 三類。Kenneth memory 有提 todo / reflection / project / habit / reading list 5 類 — 要全部入樣板定夾住 3 個？</li>
+</ul>
+
+<h2>Phase 1：Scaffold (Vite + React + TS + Tailwind)</h2>
+<p class="status-shipped">✅ Shipped</p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>File layout</strong>：<code>src/views/*.tsx</code> 一個 file 一個 view；<code>src/lib/types.ts</code> 統一 type；<code>src/lib/fetchJson.ts</code> shared fetch helper。每 view < 200 lines（vs Jimmy 5478-line single file）。</li>
+<li><strong>5 view</strong>：<code>Today</code>（default landing）/ <code>Tasks</code> / <code>Daily Note</code> / <code>Vault Health</code> / <code>Content Pipeline</code>。Today default 因為 personal OS daily entry-point。</li>
+<li><strong>Type-driven</strong>：每個 view 有對應 interface 喺 <code>types.ts</code>。學員學 strict TS 點 catch errror 喺 build time。</li>
+<li><strong>Empty state handling</strong>：每個 view 都有 <code>tasks.length === 0</code> 嘅 friendly empty state（告訴學員「跑 npm run sync:vault」），唔係 blank screen — 提升 onboarding UX。</li>
+<li><strong>Tailwind palette</strong>：沿 Jimmy DESIGN.md (canvas #f6f8fb / panel #fff / brand #3b82f6 / navy #003153 / ink #11243a / muted #66758a)，學員 Day 2 H4 polish 可以改 brand color 但 base palette already calm/dense/readable。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li>原計劃 7 view (加 Drafts + Project Status)，砍到 5 view 因為 Day 2 H3 要留 60min hands-on 俾學員自己加 view — 預留空間。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<table>
+<tr><th>替代方案</th><th>揀咗咩</th><th>為何</th></tr>
+<tr><td>Drag-drop kanban for Content Pipeline</td><td>Read-only kanban (4 column grid)</td><td>Drag-drop write 返 vault 需要 backend。Read-only render + 學員自己 edit vault frontmatter 改 status = 教 vault-as-truth 原則。</td></tr>
+<tr><td>Markdown render (react-markdown)</td><td>Plain <code>&lt;pre&gt;</code> whitespace-pre-wrap</td><td>react-markdown 加 ~30kB dependency for一個 Daily Note view 嘅 nice-to-have。Plain pre 已 readable。Day 2 H3 hands-on 學員可以自己加 react-markdown 做 upgrade exercise。</td></tr>
+<tr><td>Search / filter in Tasks</td><td>Plain list, sorted by sync order</td><td>5 sample task 太少要 filter；學員 H3 hands-on 候選 feature 之一就係加 tag filter，留俾佢哋自己 ship。</td></tr>
+<tr><td>Light + Dark mode toggle</td><td>Light-only</td><td>Dark mode 加 Tailwind class strategy + state persistence = 30 min teaching tax。Day 2 H4 polish 列做 candidate exercise。</td></tr>
+</table>
+
+<h4>開放式問題</h4>
+<ul>
+<li><strong>Q1.1</strong>：5 view 太多定 OK？學員 8hr 課堂能消化邊個範圍？我預咗 H1 全部 sample data render → H3 學員自己加 → H4 polish，但如果 pacing 緊，可以 H1 砍到 3 base view。</li>
+</ul>
+
+<h2>Phase 2：Vault Bridge (sync script + Obsidian MCP doc)</h2>
+<p class="status-shipped">✅ Shipped</p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>Script 結構</strong>：<code>scripts/sync-vault.mjs</code> 一個 file 5 個 function（syncTasks / syncToday / syncDailyNotes / syncVaultHealth / syncContentDrafts），全部 mirror 同一 pattern：<code>fast-glob 拎 file → gray-matter parse frontmatter → transform → writeFile JSON</code>。教學上「重複 pattern」= 學員 mirror 自己 entity 嘅 mental model。</li>
+<li><strong>Local date computation</strong>：<code>todayString()</code> 用 local TZ 唔用 UTC（<code>new Date().toISOString()</code> 預設 UTC，HKT +8 會撞 date boundary 12 am 後）。可以用 <code>TODAY=YYYY-MM-DD npm run sync:vault</code> override 做 demo。</li>
+<li><strong>Orphan detection</strong>：scan all <code>**/*.md</code> 拎 wikilink match <code>[[name]]</code>，30-Notes 入面 0 inbound link = orphan。Best-effort 同 Kenneth 嘅 vault-blind-spot-detector.py 邏輯近，但簡化（detector 用 community-degree，呢度只用 inbound-count）。</li>
+<li><strong>VAULT_DIR env var</strong>：default sample-vault，但學員可以 <code>VAULT_DIR=/path npm run sync:vault</code> 切自己 vault。Sync script self-doc 點 override（README + script comments）。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li><strong>「不修改 code」嘅 cleanest interpretation</strong>：原本諗 Path B Obsidian MCP only（學員 Day 1 全程喺 Codex Desktop 一句 prompt 出 JSON，唔需要寫 Node script）。最終決定 Path A 為 baseline + Path B 為 Day 1 H2 wow moment，因為：(a) MCP setup 失敗時學員仲有 baseline；(b) Path A script 教 file/glob/frontmatter 三個 fundamental concept 比一句 prompt 隱身做晒值得；(c) 「不修改 code」我解讀為唔 hack Jimmy 個 5478-line App.jsx，唔係禁所有 code。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<table>
+<tr><th>替代方案</th><th>揀咗咩</th><th>為何</th></tr>
+<tr><td>watch mode (chokidar) auto-sync</td><td>On-demand <code>npm run sync:vault</code></td><td>Watch mode 加 chokidar dep + 學員 mental model「為咩 dashboard 自動 update」對 Level 2 太早。Day 2 H4 teaser 列做 candidate。</td></tr>
+<tr><td>JSON schema validation (zod / ajv)</td><td>Plain TS interface + runtime tolerant</td><td>Zod 加 30kB + 學員 schema 寫法第二門 language。TS interface + <code>String(...)</code>/<code>?? fallback</code> tolerant parse 對 personal OS 太足夠。學員 H3 hands-on 可以自己加 zod 學 schema validation。</td></tr>
+<tr><td>Sync 寫 Markdown 返 vault (2-way)</td><td>1-way only (vault → JSON)</td><td>2-way 需要 conflict resolution + backup。1-way 教「vault 係 truth，dashboard 係 render」原則。Level 3 teaser 提 2-way。</td></tr>
+</table>
+
+<h4>開放式問題</h4>
+<ul>
+<li><strong>Q2.1</strong>：學員自己 vault 可能用 Obsidian Tasks plugin 嘅 <code>- [ ] task</code> checkbox syntax，唔係我嘅 <code>tasks/*.md</code> frontmatter。要唔要加一個 parse helper 食 checkbox tasks？呢個係 schema flexibility vs teaching simplicity 嘅 trade-off。</li>
+<li><strong>Q2.2</strong>：Vault Health 嘅 orphan detection 而家 simplified，學員 vault 可能 thousand notes，scanning 慢。要唔要加 cache layer？我預咗 H4 polish 候選。</li>
+</ul>
+
+<h2>Phase 3：Teaching Material (Day 1 + Day 2)</h2>
+<p class="status-shipped">✅ Shipped — 12 個 teaching doc</p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>SYLLABUS.md</strong>：Day 1 + Day 2 × 4 hr 結構 lock per 5/24 client align，include risk + mitigation table（5/24 evening Discord 已 ship）。</li>
+<li><strong>Per-hour file</strong>：<code>day-1/h1-base.md</code> ... <code>day-2/h4-polish.md</code> 8 個 file，每個 file 有 Step-by-step / Codex prompt 範例 / 完成標準。Instructor 跑 class 直接 follow file 唔需要再臨場 design slide flow。</li>
+<li><strong>GitHub basics</strong>：<code>github-basics.md</code> mental model + 8 essential command + Codex prompt 配 Git，pre-class 同學員自學 + Day 2 H1 課堂 reinforcement。</li>
+<li><strong>Pre-class video script</strong>：5-min outline，老師可以照住屏錄 + voice over。</li>
+<li><strong>Codex prompt library</strong>：<code>teaching/prompts/codex-prompt-library.md</code> 一個 file 集中所有 hour 嘅 prompt 範例，學員可以隨時 lookup。</li>
+<li><strong>「Workflow first」原則</strong>：每個 hour file 嘅 Codex prompt 唔係 dump 「寫一個 component」呢類 vague prompt，而係 spec → context → constraint 三段式（「跟 src/views/TasksView.tsx pattern / 寫 strict TS / 唔好 rewrite 唔關事嘅 file」）。學員學 prompting discipline。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li>原計劃 Day 2 H2 教「Anthropic API direct call」，最終揀「Codex CLI 配 LLM」+ pure JS stats first。原因：(a) 學員 8hr 課程加 API client setup + key management overhead 太大；(b) Codex Desktop 已 wire 好 LLM，借用佢 = 真實 workflow；(c) stats-first/LLM-second 教學員「LLM cost discipline」比即時 ship narrative summary 更重要。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<table>
+<tr><th>替代方案</th><th>揀咗咩</th><th>為何</th></tr>
+<tr><td>Lecture-heavy slides</td><td>Hands-on workflow files</td><td>Level 2 學員已過 Level 1 fundamentals，係 doer 不再係 listener。每 hour 都有 deliverable + checkpoint。</td></tr>
+<tr><td>所有 hour 同一 outline format</td><td>Each hour file 個 outline 因應 hour 性質微調</td><td>H1 setup-heavy 用 Step 0/1/2... numbered；H2 conceptual heavy 加 mental model section；H3 hands-on 用 min-by-min budget。Outline 跟 content 走唔係硬套模板。</td></tr>
+<tr><td>學員 follow exact same feature</td><td>學員自選 feature 加</td><td>H1-H2 follow lock-step OK，但 H3 hands-on 學員自選 = 學員 personalize personal OS 嘅 first chance。每位學員 ship 自己 feature = 課程 wow moment + 個人化動力延續。</td></tr>
+<tr><td>Pre-class video 教 React</td><td>Pre-class video 教 Git mental model + Codex 5 動作</td><td>React 喺 Day 1 H1 學員直接 read code 學；Git + Codex 係 cross-cutting tool，pre-class 攔截一次 8hr 內唔需要重複教。</td></tr>
+</table>
+
+<h4>開放式問題</h4>
+<ul>
+<li><strong>Q3.1</strong>：Day 2 H3 hands-on 60min 5 學員每位 12 min — TA 1:5 ratio 夠 attentive 嗎？實際 pacing 可能要 1:3。</li>
+<li><strong>Q3.2</strong>：Pre-class video 5 min 唔夠教完 Git mental model + Codex 5 動作，要唔要分 2 條 video？</li>
+</ul>
+
+<h2>Phase 4：Verification</h2>
+<p class="status-shipped">✅ Shipped — npm install / sync / build / dev / preview 五條 verify command 全 green</p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>5 條 verify command</strong>：
+<ol>
+<li><code>npm install</code> — dependency tree 裝得到</li>
+<li><code>npm run sync:vault</code> — sample-vault → 5 個 JSON file 寫成功</li>
+<li><code>npm run build</code> — TypeScript compile + Vite bundle 出 dist/</li>
+<li><code>npm run dev</code> — Vite dev server 起 localhost:5173 + serve <code>/data/*.json</code></li>
+<li><code>npm run preview</code> — Production bundle 喺 localhost:4173 serve</li>
+</ol>
+</li>
+<li><strong>結果</strong>：全部 exit code 0，curl smoke test HTTP 200 + 對 5 個 JSON endpoint sample byte size 正常（tasks 809B / today 216B / daily-notes 930B / vault-health 546B / content-drafts 886B）。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li><strong>Norton SSL MITM hit npm install</strong>。第一次 <code>npm install</code> 出 <code>UNABLE_TO_VERIFY_LEAF_SIGNATURE</code> + npm bug「Exit handler never called」。Memory <code>reference_norton_ssl_mitm.md</code> 有寫 Python truststore fix 但 Node 冇 documented fix。揀 <code>NODE_OPTIONS=--use-system-ca</code>（Node 22+ flag，用 Windows cert store，bypass Norton MITM 嘅 cert verification 問題）— 12 秒 install 145 packages，clean exit。</li>
+<li><strong>學員機可能撞同一 issue</strong>。HK 企業用 Norton / Symantec 比率高，pre-class checklist 要加一條「如 npm install 出 SSL error，跑 <code>NODE_OPTIONS=--use-system-ca npm install</code>」。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<table>
+<tr><th>替代方案</th><th>揀咗咩</th><th>為何</th></tr>
+<tr><td><code>npm config set strict-ssl false</code></td><td><code>NODE_OPTIONS=--use-system-ca</code></td><td>strict-ssl=false 全 disable cert verify = silent vulnerability，違反 Karpathy rule「fix root cause not symptom」。--use-system-ca 用 Windows cert store（含 Norton root） = 真正 fix，verify 仍 enforced。</td></tr>
+<tr><td>Export Norton cert PEM + <code>NODE_EXTRA_CA_CERTS</code></td><td><code>NODE_OPTIONS=--use-system-ca</code></td><td>Cert export 每次 Norton 更新都要 redo（per Norton SSL memory note）。System-ca flag 自動跟 Windows store。Lazy 但 correct。</td></tr>
+<tr><td>Run tests (vitest)</td><td>Pre-class 唔 ship，留 Day 2 H3 候選</td><td>Test setup 加 dependency + 概念 overhead。Personal OS Level 2 教學員「先 ship 再加 test」嘅 iterative 思路，唔好一開始 over-engineer。</td></tr>
+</table>
+
+<h4>開放式問題</h4>
+<ul>
+<li><strong>Q4.1</strong>：Pre-class video 4:30-5:00 段「開課當日要 bring 咩」要唔要加一條「如 npm install SSL fail，跑 NODE_OPTIONS=--use-system-ca」？開課當日撞會時間爆。建議加。</li>
+<li><strong>Q4.2</strong>：而家 verify 只係 happy path (build + curl HTTP 200)。要唔要加：學員機 typical 環境 sanity check（測 Mac / Windows / Linux 三 OS）？我自己只測過 Windows 11。</li>
+</ul>
+
+<h2>Final Status + 開放式問題集中區</h2>
+
+<h4>SPEC 5 條全部 covered</h4>
+<table>
+<tr><th>SPEC #</th><th>Requirement</th><th>How shipped</th><th>Status</th></tr>
+<tr><td>1</td><td>前端用個人 os 做 base，要部署埋</td><td><code>dotai-personal-os/</code> Vite+React+TS+Tailwind 5-view scaffold + <code>npm run build</code> + <code>npm run preview</code> localhost:4173 prod bundle</td><td class="status-shipped">✅</td></tr>
+<tr><td>2</td><td>Database 用 Obsidian，設計入後端</td><td>Obsidian vault frontmatter (<code>tasks/</code> / <code>40 - Daily/</code> / <code>_drafts/</code>) → <code>sync-vault.mjs</code> Node + Obsidian MCP 兩條 path → <code>public/data/*.json</code> → frontend fetch</td><td class="status-shipped">✅</td></tr>
+<tr><td>3</td><td>GitHub 基礎教學</td><td><code>teaching/github-basics.md</code> mental model + 8 command + Codex 配 Git + <code>day-2/h1-git.md</code> 課堂 hour</td><td class="status-shipped">✅</td></tr>
+<tr><td>4</td><td>驗證完係 work 先算成功</td><td>npm install / sync / build / dev / preview 五條 command 跑成功 + curl smoke test HTTP 200 五個 JSON endpoint</td><td class="status-shipped">✅</td></tr>
+<tr><td>5</td><td>不涉及修改 code</td><td>Jimmy 既有 <code>jimmy-dashboard-app/</code> repo 0 修改；NEW scaffold 落 <code>dotai-personal-os/</code> sibling folder（Q0.1 confirm 解讀）</td><td class="status-shipped">✅ (pending Q0.1 confirm)</td></tr>
+</table>
+
+<h4>9 條開放式問題</h4>
+<ol>
+<li><strong>Q0.1</strong>：「不修改 code」係咪指唔寫任何 code 只寫教材？我解讀為「唔 hack Jimmy 原 repo，build NEW scaffold OK」。</li>
+<li><strong>Q0.2</strong>：On-top feature 揀 Vault Health + Content Pipeline。仲有候選 Project Status / Watchlist / Knowledge — 要唔要換？</li>
+<li><strong>Q0.3</strong>：8hr (Day 1 4hr + Day 2 4hr) pacing OK 定 condense？</li>
+<li><strong>Q0.4</strong>：學員 vault schema 包邊幾個 entity（todo / reflection / project / habit / reading list）？</li>
+<li><strong>Q1.1</strong>：5 view default 太多嗎？</li>
+<li><strong>Q2.1</strong>：要唔要 support Obsidian Tasks plugin 嘅 <code>- [ ]</code> checkbox syntax？</li>
+<li><strong>Q2.2</strong>：學員 vault 上千 notes，orphan scan 要唔要 cache?</li>
+<li><strong>Q3.1</strong>：Day 2 H3 1:5 TA ratio 夠？</li>
+<li><strong>Q3.2</strong>：Pre-class video 5min 夠唔夠教 Git + Codex 5 動作？</li>
+<li><strong>Q4.1</strong>：Pre-class checklist 加 Norton SSL workaround 一條？</li>
+<li><strong>Q4.2</strong>：Cross-OS verify (Mac / Linux) 要唔要 ship 之前都做埋？</li>
+</ol>
+
+<h4>下一步建議 (morning review)</h4>
+<ol>
+<li>Kenneth review Q0.1（confirm「不修改 code」解讀）+ Q0.2（feature picks）— 呢 2 條 unblock 之後其他 8 條 optimization 唔係 critical path。</li>
+<li>如 Q0.1 confirm「OK build code」+ Q0.2 confirm Vault Health + Content Pipeline → 即可 push 上 GitHub kennethlaw325/dotai-personal-os 做 share-ready snapshot。</li>
+<li>視 Q0.3 同 Q4.1 → 補 pre-class video Norton workaround line。</li>
+</ol>
+
+<p style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e6edf5; color: #66758a; font-size: 0.85rem;">
+Generated 2026-05-25 HKT autonomous overnight build. 4 phase / 5 SPEC item / 9 open question / 5 verify command green.
+</p>
+
+</body>
+</html>
