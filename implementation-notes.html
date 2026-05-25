@@ -211,33 +211,93 @@ ul { margin: 0.6rem 0; }
 <tr><td>2</td><td>Database 用 Obsidian，設計入後端</td><td>Obsidian vault frontmatter (<code>tasks/</code> / <code>40 - Daily/</code> / <code>_drafts/</code>) → <code>sync-vault.mjs</code> Node + Obsidian MCP 兩條 path → <code>public/data/*.json</code> → frontend fetch</td><td class="status-shipped">✅</td></tr>
 <tr><td>3</td><td>GitHub 基礎教學</td><td><code>teaching/github-basics.md</code> mental model + 8 command + Codex 配 Git + <code>day-2/h1-git.md</code> 課堂 hour</td><td class="status-shipped">✅</td></tr>
 <tr><td>4</td><td>驗證完係 work 先算成功</td><td>npm install / sync / build / dev / preview 五條 command 跑成功 + curl smoke test HTTP 200 五個 JSON endpoint</td><td class="status-shipped">✅</td></tr>
-<tr><td>5</td><td>不涉及修改 code</td><td>Jimmy 既有 <code>jimmy-dashboard-app/</code> repo 0 修改；NEW scaffold 落 <code>dotai-personal-os/</code> sibling folder（Q0.1 confirm 解讀）</td><td class="status-shipped">✅ (pending Q0.1 confirm)</td></tr>
+<tr><td>5</td><td>不涉及修改 code</td><td>Jimmy 既有 <code>jimmy-dashboard-app/</code> repo 0 修改；NEW scaffold 落 standalone <code>C:/Users/Kenneth/Claude/dotai-personal-os/</code></td><td class="status-shipped">✅</td></tr>
 </table>
 
-<h4>9 條開放式問題</h4>
+<h2>Phase 5：GitHub Push（2026-05-25 morning review session）</h2>
+<p class="status-shipped">✅ Shipped — public repo at <a href="https://github.com/kennethlaw325/dotai-personal-os">kennethlaw325/dotai-personal-os</a></p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>Folder 由 nested 變 standalone</strong>：由 <code>jimmy-dashboard-OS/level-2-skeleton/</code> 搬出嚟做 <code>C:/Users/Kenneth/Claude/dotai-personal-os/</code>。Cleaner mental model：1 個 folder = 1 個 repo，唔 nest 喺 fork 入面。</li>
+<li><strong>Repo visibility = public</strong>：學員 fork 直接，code 入面 0 secret。Sample-vault 都係 demo data 唔含 PII。</li>
+<li><strong>Repo name = dotai-personal-os</strong>（per Kenneth confirm，「dotai」= DotAI 品牌，「personal-os」= 描述）</li>
+<li><strong>Initial commit message</strong>：conventional commits format + 全 scaffold description + Claude attribution。Commit ID <code>61232a7</code>。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li><strong>Old <code>jimmy-dashboard-OS/level-2-skeleton/</code> folder 未刪</strong>：rm 撞 Windows「Device or resource busy」file handle lock，需要 Kenneth 重啟或關晒 editor 後手動 cleanup。屬於 fork untracked file，不影響 workflow。</li>
+</ul>
+
+<h2>Phase 6：Student Handbook（2026-05-25 morning）</h2>
+<p class="status-shipped">✅ Shipped — <code>STUDENT-HANDBOOK.md</code> repo root</p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>單一 consolidated student-facing doc</strong>：將 13 個 instructor-side teaching file 合併做 1 個學生第二人稱 markdown handbook，學生 self-paced read。</li>
+<li><strong>Audience shift</strong>：由「老師示範...」/「TA 1:5...」/「完成標準: 學員 ship」改做「你會做...」/「你應該見到...」/「你嘅 next step」。</li>
+<li><strong>結構</strong>：呢個課程教你做咩 / pre-class checklist / Day 1 4hr / Day 2 4hr / 課後 deploy + 維護 / reference cheatsheet。~2000 行 single file，學員可以一路 read 或者 jump 章節。</li>
+<li><strong>原 instructor docs 保留</strong>：<code>teaching/</code> folder 13 file 唔刪，老師用嗰套；STUDENT-HANDBOOK 學生用。Dual-audience structure。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li>原計劃輸出 PDF / HTML / SCORM 等 multi-format，最終淨係 markdown — 學員 fork repo 用 VS Code / Codex Desktop / Obsidian 任何 markdown reader 都睇得到。Multi-format conversion 屬 post-ship task。</li>
+</ul>
+
+<h2>Phase 7：Vercel Deploy（PENDING Kenneth manual step）</h2>
+<p class="status-open">⏳ Pending — 需要 Kenneth 登入 Vercel 親自完成 import + env var + deploy</p>
+
+<h4>準備好嘅嘢</h4>
+<ul>
+<li>GitHub repo 已 push，URL ready for Vercel import</li>
+<li><code>deploy-your-own.md</code> + STUDENT-HANDBOOK「課後：自己 deploy」section 寫齊步驟</li>
+<li>Edge Middleware syntax 寫住 Vite SPA 版本，仍未 verified 落 Vercel（Kenneth accept as draft，「寫左先，之後會再實測」）</li>
+</ul>
+
+<h4>Kenneth 要做嘅 steps</h4>
 <ol>
-<li><strong>Q0.1</strong>：「不修改 code」係咪指唔寫任何 code 只寫教材？我解讀為「唔 hack Jimmy 原 repo，build NEW scaffold OK」。</li>
-<li><strong>Q0.2</strong>：On-top feature 揀 Vault Health + Content Pipeline。仲有候選 Project Status / Watchlist / Knowledge — 要唔要換？</li>
-<li><strong>Q0.3</strong>：8hr (Day 1 4hr + Day 2 4hr) pacing OK 定 condense？</li>
-<li><strong>Q0.4</strong>：學員 vault schema 包邊幾個 entity（todo / reflection / project / habit / reading list）？</li>
-<li><strong>Q1.1</strong>：5 view default 太多嗎？</li>
-<li><strong>Q2.1</strong>：要唔要 support Obsidian Tasks plugin 嘅 <code>- [ ]</code> checkbox syntax？</li>
-<li><strong>Q2.2</strong>：學員 vault 上千 notes，orphan scan 要唔要 cache?</li>
-<li><strong>Q3.1</strong>：Day 2 H3 1:5 TA ratio 夠？</li>
-<li><strong>Q3.2</strong>：Pre-class video 5min 夠唔夠教 Git + Codex 5 動作？</li>
-<li><strong>Q4.1</strong>：Pre-class checklist 加 Norton SSL workaround 一條？</li>
-<li><strong>Q4.2</strong>：Cross-OS verify (Mac / Linux) 要唔要 ship 之前都做埋？</li>
+<li>登入 <a href="https://vercel.com">vercel.com</a>（用 GitHub OAuth）</li>
+<li>Add New → Project → Import <code>kennethlaw325/dotai-personal-os</code></li>
+<li>Build Command 保持 default <code>npm run build</code>（**唔好** 加 sync:vault）</li>
+<li>Settings → Environment Variables → 加 <code>SITE_PASSWORD</code></li>
+<li>Deploy → 攞 URL</li>
+<li>第一次撞 middleware error 嘅話跟 Vercel 提示安裝 <code>@vercel/edge</code> + 改 import</li>
 </ol>
 
-<h4>下一步建議 (morning review)</h4>
-<ol>
-<li>Kenneth review Q0.1（confirm「不修改 code」解讀）+ Q0.2（feature picks）— 呢 2 條 unblock 之後其他 8 條 optimization 唔係 critical path。</li>
-<li>如 Q0.1 confirm「OK build code」+ Q0.2 confirm Vault Health + Content Pipeline → 即可 push 上 GitHub kennethlaw325/dotai-personal-os 做 share-ready snapshot。</li>
-<li>視 Q0.3 同 Q4.1 → 補 pre-class video Norton workaround line。</li>
-</ol>
+<h2>11 條 Open Question — Status Update</h2>
+
+<table>
+<tr><th>Q#</th><th>Question</th><th>Status</th><th>Resolution</th></tr>
+<tr><td>Q0.1</td><td>「不修改 code」interpretation</td><td class="status-shipped">✅ Confirmed</td><td>解讀啱：唔 hack Jimmy 原 repo，build NEW scaffold OK</td></tr>
+<tr><td>Q0.2</td><td>On-top 2 feature picks</td><td class="status-shipped">✅ Confirmed</td><td>Vault Health + Content Pipeline 接受</td></tr>
+<tr><td>Q0.3</td><td>8hr pacing OK?</td><td class="status-shipped">✅ Confirmed</td><td>OK，H1 唔拆 codebase 省咗 15min buffer + H4 加咗 30min deploy demo</td></tr>
+<tr><td>Q0.4</td><td>Sample vault entity 範圍</td><td class="status-shipped">✅ Confirmed</td><td>而家 4 類（tasks / daily / drafts / inbox）已夠，學員 H3 自加 reading list</td></tr>
+<tr><td>Q1.1</td><td>5 view default 太多?</td><td class="status-shipped">✅ Confirmed</td><td>OK 唔郁</td></tr>
+<tr><td>Q2.1</td><td>Obsidian Tasks plugin checkbox</td><td class="status-shipped">✅ Shipped</td><td>已加入 sync-vault.mjs，verified 9 tasks (5 frontmatter + 4 checkbox)</td></tr>
+<tr><td>Q2.2</td><td>Orphan scan cache (大 vault)</td><td class="status-open">⏳ Deferred</td><td>學員 vault 真係慢先優化</td></tr>
+<tr><td>Q3.1</td><td>Day 2 H3 1:5 TA ratio</td><td class="status-open">⏳ Watch-and-see</td><td>到時睇情況</td></tr>
+<tr><td>Q3.2</td><td>Pre-class video 5min 夠?</td><td class="status-shipped">✅ Resolved</td><td>取消 video 改用 <code>pre-class-checklist.md</code> 純 markdown — Kenneth pick A path</td></tr>
+<tr><td>Q4.1</td><td>Pre-class 加 Norton SSL?</td><td class="status-shipped">✅ Shipped</td><td>新 <code>pre-class-checklist.md</code> 已包獨立 Norton workaround section</td></tr>
+<tr><td>Q4.2</td><td>Cross-OS Mac/Linux verify</td><td class="status-shipped">✅ Shipped</td><td>所有教學 doc 已加 Mac/Linux 命令對應；real Mac 機 verify 未做（pending Kenneth 出現 Mac 學員時 test）</td></tr>
+</table>
+
+<h2>新發現 (2026-05-25 morning session)</h2>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>Deploy 唯一路徑 = real vault + 4-layer privacy</strong>：原本 deploy doc 寫「Choice A sample-only / Choice B real+privacy」雙路；Kenneth 確認單一路徑（真 vault data + 4 層保護），刪掉 demo-only path。</li>
+<li><strong>Vercel build command 修正</strong>：原本寫 <code>npm run sync:vault && npm run build</code> 係錯 — Vercel build machine 冇 vault file。正確 = 本機 sync → commit JSON → push → Vercel 只 build。已寫入 deploy doc + STUDENT-HANDBOOK。</li>
+<li><strong>VS Code → Codex Desktop 全程 IDE</strong>：原 pre-class 包 VS Code 安裝，Kenneth 確認 Codex Desktop 有 file output window + 內建 terminal 已足夠 IDE 角色。5 file sync 改晒。</li>
+<li><strong>H1 唔拆 codebase</strong>：原 H1 Step 5 「拆 codebase 15min」cut 走，學員 H3 / H4 touch code 自然見 structure。</li>
+<li><strong>H2 教 3 條讀 vault 路</strong>：原本主軸只教 MCP（setup overhead 高）；改做主軸路 1 直接讀 vault folder（0 setup），路 2 MCP / 路 3 CLI 做 teaser。</li>
+<li><strong>H3 用 reading list concrete example</strong>：原本講「vault frontmatter → JSON → React type 三層 coupling」抽象概念，改做完整 walk-through「我想加 reading list」具體做。</li>
+<li><strong>H4 移除「必然 error」framing</strong>：原本講 TS error 係必然 teaching moment，改做 ship 流程主軸 + contingency section 處理 error case。</li>
+</ul>
 
 <p style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e6edf5; color: #66758a; font-size: 0.85rem;">
-Generated 2026-05-25 HKT autonomous overnight build. 4 phase / 5 SPEC item / 9 open question / 5 verify command green.
+Generated 2026-05-25 HKT. <strong>Updated 09:25 HKT</strong> — 11/11 open question resolved or deferred. Phase 1-6 shipped. Phase 7 (Vercel deploy) pending Kenneth manual step. 58 file in repo + STUDENT-HANDBOOK.md + implementation-notes.html。
 </p>
 
 </body>
