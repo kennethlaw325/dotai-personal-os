@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "sync:vault": "node scripts/sync-vault.mjs",
+    "insights": "node scripts/insights.mjs",
+    "build:handbook": "node scripts/build-handbook-html.mjs",
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
@@ -22,6 +24,7 @@
     "autoprefixer": "^10.4.20",
     "fast-glob": "^3.3.2",
     "gray-matter": "^4.0.3",
+    "marked": "^15.0.4",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.16",
     "typescript": "^5.7.2",

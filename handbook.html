@@ -1,0 +1,1333 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<title>DotAI Codex 網課 Level 2 — Student Handbook</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root {
+  --canvas: #f6f8fb;
+  --panel: #ffffff;
+  --line: #e6edf5;
+  --ink: #11243a;
+  --muted: #66758a;
+  --brand: #3b82f6;
+  --navy: #003153;
+  --code-bg: #e6edf5;
+  --code-block-bg: #11243a;
+  --code-block-text: #f6f8fb;
+  --quote-bg: #fff7e6;
+  --quote-border: #f59e0b;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang HK", "Noto Sans HK", system-ui, sans-serif;
+  max-width: 920px;
+  margin: 2rem auto;
+  padding: 0 1.2rem 4rem;
+  line-height: 1.65;
+  color: var(--ink);
+  background: var(--canvas);
+}
+h1 {
+  border-bottom: 2px solid var(--navy);
+  padding-bottom: 0.5rem;
+  margin-top: 2rem;
+}
+h2 {
+  color: var(--navy);
+  margin-top: 2.5rem;
+  border-left: 4px solid var(--brand);
+  padding-left: 0.7rem;
+}
+h3 {
+  color: var(--ink);
+  margin-top: 1.6rem;
+}
+h4 {
+  color: var(--muted);
+  margin-top: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.92rem;
+}
+p, li { line-height: 1.7; }
+code {
+  background: var(--code-bg);
+  padding: 0.12rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.88em;
+  font-family: "SF Mono", Consolas, Monaco, monospace;
+}
+pre {
+  background: var(--code-block-bg);
+  color: var(--code-block-text);
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.85em;
+  line-height: 1.55;
+}
+pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+blockquote {
+  border-left: 3px solid var(--quote-border);
+  padding: 0.5rem 1rem;
+  background: var(--quote-bg);
+  margin: 1rem 0;
+  color: var(--ink);
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+  background: var(--panel);
+  border-radius: 8px;
+  overflow: hidden;
+}
+th, td {
+  border: 1px solid var(--line);
+  padding: 0.55rem 0.8rem;
+  text-align: left;
+  font-size: 0.92rem;
+  vertical-align: top;
+}
+th {
+  background: var(--line);
+  font-weight: 650;
+}
+a {
+  color: var(--brand);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+ul, ol { padding-left: 1.5rem; }
+li { margin: 0.25rem 0; }
+hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 2rem 0;
+}
+img { max-width: 100%; height: auto; }
+.toc-jump {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+@media print {
+  body { background: white; max-width: none; padding: 1rem; }
+  h1, h2 { page-break-after: avoid; }
+  pre, table { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>DotAI Codex 網課 Level 2 — Student Handbook</h1>
+<blockquote>
+<p>你嘅完整課程指南。由開課前裝環境，到課堂兩日 8 小時嘅每一步，到課後自己 deploy + 維護，全部喺呢一份。</p>
+</blockquote>
+<p><strong>課程</strong>：DotAI Codex 網課 Level 2 — 用 Codex 砌自己嘅個人 OS
+<strong>Repo</strong>：<a href="https://github.com/kennethlaw325/dotai-personal-os"><code>kennethlaw325/dotai-personal-os</code></a>
+<strong>時長</strong>：2 日 × 4 小時 = 8 小時 實體班
+<strong>Prerequisites</strong>：完成過 Level 1（識用 Codex Desktop 基本操作）</p>
+<hr>
+<h2>🚀 快速入口</h2>
+<p>第一次睇？跟住呢個順序：</p>
+<table>
+<thead>
+<tr>
+<th>你而家係邊個階段？</th>
+<th>跳去呢度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>開課前一週</td>
+<td><a href="#%E8%AA%B2%E7%A8%8B%E5%89%8D%E4%B8%80%E9%80%B1%E8%A6%81%E5%81%9A%E5%98%85-pre-class-checklist">Pre-class checklist</a> — 裝環境 + 必讀</td>
+</tr>
+<tr>
+<td>開課當日 Day 1</td>
+<td><a href="#day-1-h160-min--%E7%94%B1-0-setup-workspace--%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%B7%91%E8%B5%B7">Day 1 H1</a> — 由 0 setup 開始</td>
+</tr>
+<tr>
+<td>開課當日 Day 2</td>
+<td><a href="#day-2-h160-min--git-workflow--codex-%E9%85%8D-git">Day 2 H1</a> — Git workflow 起手</td>
+</tr>
+<tr>
+<td>完課後諗點維護 / deploy</td>
+<td><a href="#%E8%AA%B2%E5%BE%8C%E8%87%AA%E5%B7%B1-deploy--%E7%B6%AD%E8%AD%B7">課後 deploy + 維護</a></td>
+</tr>
+<tr>
+<td>撞 problem / 唔記得個 command</td>
+<td><a href="#reference-cheatsheet">Reference Cheatsheet</a> 最底</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>📋 目錄</h2>
+<ul>
+<li><a href="#%E5%91%A2%E5%80%8B%E8%AA%B2%E7%A8%8B%E6%95%99%E4%BD%A0%E5%81%9A%E5%92%A9">呢個課程教你做咩</a></li>
+<li><a href="#%E8%AA%B2%E7%A8%8B%E5%89%8D%E4%B8%80%E9%80%B1%E8%A6%81%E5%81%9A%E5%98%85-pre-class-checklist">課程前一週要做嘅 pre-class checklist</a></li>
+<li><a href="#day-1foundation4-%E5%B0%8F%E6%99%82">Day 1：Foundation（4 小時）</a></li>
+<li><a href="#day-2production4-%E5%B0%8F%E6%99%82">Day 2：Production（4 小時）</a></li>
+<li><a href="#%E8%AA%B2%E5%BE%8C%E8%87%AA%E5%B7%B1-deploy--%E7%B6%AD%E8%AD%B7">課後：自己 deploy + 維護</a></li>
+<li><a href="#reference-cheatsheet">Reference Cheatsheet</a></li>
+</ul>
+<hr>
+<h2>呢個課程教你做咩</h2>
+<p>你會 build 一個<strong>自己嘅 personal OS dashboard</strong> — 用 Obsidian vault 做 database，用 Codex 寫 frontend，跑喺自己 laptop 上面。</p>
+<p><strong>完課之後你會有</strong>：</p>
+<ol>
+<li>一個跑得起嘅 personal OS dashboard（5 個 view + 自己加嘅 1-2 個）</li>
+<li>配自己 Obsidian vault 嘅 schema（task / daily note / drafts / 自己想要嘅 entity）</li>
+<li>識用 Codex 寫新 component / debug type error / refactor code</li>
+<li>識用 Git 管理自己 dashboard repo</li>
+<li>識將自己 OS deploy 上 Vercel + 密碼保護</li>
+<li>個 OS 你今晚就用得返 — 唔係玩完課程就放低</li>
+</ol>
+<p><strong>核心 mental model（兩條 path 一齊睇）</strong>：</p>
+<pre><code>本機開發 path：
+  [Obsidian vault] → npm run sync:vault → [public/data/*.json] → Vite dev → [localhost:5173 dashboard]
+
+部署 path（課後）：
+  [Obsidian vault] → sync → [JSON] → git push → [GitHub private repo] → Vercel build
+                                                                            ↓
+                                              [URL + Edge Middleware 密碼 gate]
+                                                                            ↓
+                                                              [Vercel CDN serve dashboard]
+</code></pre>
+<p>Vault 係 truth，dashboard 係 render layer。你改 vault → 跑 sync → dashboard update。</p>
+<p>部署嘅時候，Vercel 永遠唔接觸你 vault — 學員本機 sync 出嘅 JSON commit 入 repo，Vercel 只 build 已 commit 嘅 JSON。</p>
+<hr>
+<h2>課程前一週要做嘅 pre-class checklist</h2>
+<p>開課當日唔好先發現裝唔到嘢。呢段一週前做齊。</p>
+<h3>要裝嘅 6 樣</h3>
+<h4>1. Node.js 22.x</h4>
+<p>去 <a href="https://nodejs.org/">https://nodejs.org/</a> 揀 <strong>LTS 版本</strong>（標 v22.x）下載 + 裝。</p>
+<p>裝完喺 terminal verify：</p>
+<pre><code class="language-bash">node --version    # 應該 v22.x.x
+npm --version     # 應該 10.x.x 或以上
+</code></pre>
+<h4>2. Git</h4>
+<ul>
+<li>Windows：<a href="https://git-scm.com/download/win">https://git-scm.com/download/win</a> 揀 installer</li>
+<li>Mac：已 pre-install，<code>git --version</code> 確認。如冇就 <code>xcode-select --install</code></li>
+<li>Linux：<code>sudo apt install git</code></li>
+</ul>
+<pre><code class="language-bash">git --version    # 應該 git version 2.x.x
+</code></pre>
+<h4>3. Codex Desktop</h4>
+<p>去 <a href="https://codex.openai.com%EF%BC%88%E6%88%96%E8%80%85">https://codex.openai.com（或者</a> OpenAI 嘅最新 desktop app 入口）download Mac / Windows version，裝完 login。</p>
+<p><strong>呢個係課程嘅主要 IDE</strong>。<strong>唔需要另外裝 VS Code</strong>，Codex Desktop 有齊 chat / file output window / 內建 terminal。</p>
+<h4>4. Obsidian</h4>
+<p>去 <a href="https://obsidian.md">https://obsidian.md</a> 下載 + 裝。揀「Create new vault」整一個空白 vault，或者開你自己已有嘅 vault。</p>
+<h4>5. GitHub account</h4>
+<p>如果未有，去 <a href="https://github.com/signup">https://github.com/signup</a> 註冊。用你常用 email。</p>
+<h4>6. GitHub CLI (<code>gh</code>)</h4>
+<p>Day 1 / Day 2 全程都用到 <code>gh</code> command（fork / clone / PR）。</p>
+<ul>
+<li>Mac：<code>brew install gh</code></li>
+<li>Windows：<code>winget install --id GitHub.cli</code> 或者 <a href="https://cli.github.com/">https://cli.github.com/</a> 下載 installer</li>
+<li>Linux：跟 <a href="https://github.com/cli/cli#installation">https://github.com/cli/cli#installation</a> 指示</li>
+</ul>
+<p>裝完 + 登入：</p>
+<pre><code class="language-bash">gh --version       # 應該 gh version 2.x.x 或以上
+gh auth login      # 跟住指示用 browser 登入 GitHub
+gh auth status     # 確認 logged in
+</code></pre>
+<h3>⚠️ Windows 學員特別注意（Norton / Symantec SSL）</h3>
+<p>如果你部 Windows 機裝咗 <strong>Norton Antivirus</strong> 或者 <strong>Symantec Endpoint Protection</strong>（公司機常裝），第一次跑 <code>npm install</code> 可能撞 SSL error：</p>
+<pre><code>npm error UNABLE_TO_VERIFY_LEAF_SIGNATURE
+npm error Exit handler never called!
+</code></pre>
+<p><strong>原因</strong>：Norton 攔截 HTTPS connection 做 cert scanning，npm 唔識認 Norton 自簽 cert。</p>
+<p><strong>Fix</strong>：跑 npm 嘅時候加 <code>NODE_OPTIONS=--use-system-ca</code> prefix：</p>
+<pre><code class="language-powershell">$env:NODE_OPTIONS = &quot;--use-system-ca&quot;
+npm install
+</code></pre>
+<p>呢個 flag 叫 Node 用 Windows 系統嘅 cert store（入面已裝 Norton root）。</p>
+<p>Mac / Linux 學員唔需要呢個 workaround。</p>
+<h3>YAML frontmatter 30 秒入門</h3>
+<p>成個課程嘅 vault file 用 YAML frontmatter（夾喺 <code>---</code> 中間）做 metadata。樣板：</p>
+<pre><code class="language-yaml">---
+id: t-001
+title: 寫 Threads Part 3
+status: doing
+created_at: 2026-05-23T10:00:00+08:00
+tags: [content, deadline]
+rating: null
+---
+
+呢度落本身 markdown body...
+</code></pre>
+<p>記住 4 個基本規則：</p>
+<ol>
+<li><code>key: value</code> 一行一個，<strong>冒號後面要有空格</strong></li>
+<li>字符串可以唔加引號（除非有 <code>:</code> / <code>#</code> 等特殊字符）</li>
+<li>List 兩種寫法：inline <code>[a, b, c]</code> 或 block：<pre><code class="language-yaml">tags:
+  - content
+  - deadline
+</code></pre>
+</li>
+<li>Null / 未填：寫 <code>null</code> 或者 留空（<code>rating: </code>）</li>
+</ol>
+<p>frontmatter 一旦 syntax 錯，<code>sync:vault</code> 會 fail 嗰個 file。撞到 error 先 check 冒號後有冇空格 + List 有冇 indent 對齊。</p>
+<h3>Git mental model（30 秒記住呢張圖）</h3>
+<pre><code>[你電腦 file]
+   ↕ git add / git restore
+[Staging area]
+   ↕ git commit / git reset
+[Local repo (.git/)]
+   ↕ git push / git pull
+[Remote repo (GitHub)]
+</code></pre>
+<p>3 個 state、4 條 transition。Day 2 H1 會詳細教。</p>
+<h3>Codex Desktop 5 個基本動作</h3>
+<ol>
+<li><strong>New chat</strong> — Cmd/Ctrl+N 開新對話</li>
+<li><strong>Switch model</strong> — 揀 Claude / GPT model（按老師推薦）</li>
+<li><strong><code>@cwd &lt;folder&gt;</code></strong> — set working directory 比 Codex 識讀你 project</li>
+<li><strong>Drag-drop file</strong> — 直接拖 file 入 chat 做 context</li>
+<li><strong>Settings → MCP</strong> — 入面睇 connected MCP server 列表</li>
+</ol>
+<h3>開課前 self-verify checklist</h3>
+<p>開課前一日跑過呢條 list：</p>
+<ul>
+<li><input disabled="" type="checkbox"> <code>node --version</code> 出 v22.x</li>
+<li><input disabled="" type="checkbox"> <code>npm --version</code> 出 10.x+</li>
+<li><input disabled="" type="checkbox"> <code>git --version</code> 出 git version 2.x</li>
+<li><input disabled="" type="checkbox"> <code>gh --version</code> 出 gh version 2.x+ 同 <code>gh auth status</code> 已 logged in</li>
+<li><input disabled="" type="checkbox"> Codex Desktop 開到，已 login，見到 chat + terminal + file panel</li>
+<li><input disabled="" type="checkbox"> Obsidian 開到，有起碼一個 vault</li>
+<li><input disabled="" type="checkbox"> github.com login 入到自己 dashboard</li>
+<li><input disabled="" type="checkbox"> （Windows + Norton 用戶）已記住 <code>NODE_OPTIONS=--use-system-ca</code> workaround</li>
+<li><input disabled="" type="checkbox"> 睇過 YAML 30 秒入門 + Git mental model + Codex Desktop 5 動作</li>
+</ul>
+<p>撞 problem 開課前 3 日內 message 老師。</p>
+<hr>
+<h2>Day 1：Foundation（4 小時）</h2>
+<p>兩日總共 8 小時。Day 1 你會：</p>
+<ol>
+<li>由 0 setup project + 第一次跑起 dashboard</li>
+<li>教 Codex 識讀你 vault</li>
+<li>加自己想要嘅 entity（reading list / habits / ...）</li>
+<li>用 Codex 寫新 component</li>
+</ol>
+<hr>
+<h3>Day 1 H1（60 min）— 由 0 setup workspace + 第一次跑起</h3>
+<p><strong>目標</strong>：你由 0 開始，60 分鐘後瀏覽器開 localhost:5173 見到 5 個 view render sample data。</p>
+<p><strong>今 hour 唔深入拆 codebase</strong>，先 ship 跑得起再講。</p>
+<h4>Step 0 — 環境 sanity check（5 min）</h4>
+<p>喺 Codex Desktop 嘅內建 terminal 跑：</p>
+<pre><code class="language-bash">node --version    # 期望 v22.x
+npm --version     # 期望 10.x+
+git --version
+</code></pre>
+<p>3 條任何一條 fail，叫 TA 即場救。</p>
+<h4>Step 1 — Codex Desktop setup workspace（10 min）</h4>
+<ol>
+<li><p><strong>打開 Codex Desktop</strong></p>
+</li>
+<li><p><strong>揀放 project 嘅 parent folder</strong>（即係之後 <code>dotai-personal-os</code> 個 sub-folder 嘅上一層）：</p>
+<ul>
+<li>Windows：<code>C:\Users\&lt;你&gt;\Desktop\</code></li>
+<li>Mac：<code>/Users/&lt;你&gt;/Desktop/</code></li>
+<li>Linux：<code>/home/&lt;你&gt;/</code></li>
+</ul>
+<p>Step 2 <code>gh repo fork --clone</code> 會自動喺呢個 parent 入面 create <code>dotai-personal-os/</code> sub-folder。</p>
+</li>
+<li><p><strong>喺 Codex Desktop 內開 file panel</strong>指住 parent folder</p>
+</li>
+<li><p><strong>喺 Codex Desktop 內開 terminal</strong>（內建嘅），cd 入 parent</p>
+</li>
+<li><p><strong>set <code>@cwd</code> 比 Codex 識個 working directory</strong>（之後 Step 2 fork 完再改 <code>@cwd</code> 入 sub-folder）</p>
+</li>
+</ol>
+<h4>Step 2 — Fork + clone skeleton repo（5 min）</h4>
+<pre><code class="language-bash">gh repo fork kennethlaw325/dotai-personal-os --clone
+</code></pre>
+<p>呢個 command 做 3 件事：</p>
+<ol>
+<li>Fork 老師個 repo 入你 GitHub account</li>
+<li>Clone 你個 fork 落本機</li>
+<li>自動 set 2 個 remote：<code>origin</code> = 你個 fork、<code>upstream</code> = 老師個 repo</li>
+</ol>
+<p><code>upstream</code> Day 2 H1 會用到（拎老師課堂中 push 嘅 fix）。</p>
+<p>確認 remote 設好：</p>
+<pre><code class="language-bash">cd dotai-personal-os
+git remote -v
+# origin     https://github.com/&lt;你&gt;/dotai-personal-os.git (fetch)
+# origin     https://github.com/&lt;你&gt;/dotai-personal-os.git (push)
+# upstream   https://github.com/kennethlaw325/dotai-personal-os.git (fetch)
+# upstream   https://github.com/kennethlaw325/dotai-personal-os.git (push)
+</code></pre>
+<h4>Step 3 — npm install（10 min）</h4>
+<pre><code class="language-bash">npm install
+</code></pre>
+<p>如果撞 SSL error（Norton / 公司 firewall）：</p>
+<pre><code class="language-bash">NODE_OPTIONS=--use-system-ca npm install
+</code></pre>
+<p>第一次 install 1-2 分鐘。期間老師會講「npm install 喺做緊咩」mental model。</p>
+<h4>Step 4 — Sync sample vault（5 min）</h4>
+<pre><code class="language-bash">npm run sync:vault
+</code></pre>
+<p>呢句食 <code>sample-vault/</code> folder 入面嘅 markdown 嘅 frontmatter → 出 JSON 落 <code>public/data/</code>。</p>
+<p>睇 console output 應該見：</p>
+<pre><code>tasks.json ← 9 tasks (5 frontmatter + 4 checkbox)
+today.json ← 3 task refs
+daily-notes.json ← 3 notes
+vault-health.json ← inbox 2 / orphan 3 / recent 3
+content-drafts.json ← 5 drafts
+✅ sync done
+</code></pre>
+<h4>Step 5 — Dev server（5 min）</h4>
+<pre><code class="language-bash">npm run dev
+</code></pre>
+<p>瀏覽器開 <a href="http://localhost:5173">http://localhost:5173</a> — 應該見到：</p>
+<ul>
+<li>Sidebar 5 個 button：Today / Tasks / Daily Note / Vault Health / Content Pipeline</li>
+<li>Default Today view render 樣板 plan</li>
+<li>切其他 view 都見到 sample data</li>
+</ul>
+<p><strong>🎉 Wow moment #1</strong>：5 個 view 已 work，你未寫過一行 code。</p>
+<h4>Step 6 — Production build（10 min）</h4>
+<pre><code class="language-bash"># 停咗 dev server (Ctrl+C)
+npm run build
+npm run preview
+</code></pre>
+<p>開 <a href="http://localhost:4173">http://localhost:4173</a> — 同 dev server 一樣 work。</p>
+<p>兩種跑法嘅差別：</p>
+<ul>
+<li><code>npm run dev</code> = <strong>開發版</strong>（hot reload，dev tool 多）</li>
+<li><code>npm run preview</code> = <strong>production 版</strong>（已壓縮，模擬真實 deploy 環境）</li>
+</ul>
+<h4>Step 7 — Checkpoint（10 min）</h4>
+<p>你應該見到 localhost:5173 同 localhost:4173 都 render 到 5 view。</p>
+<p>常見 fail mode：</p>
+<ul>
+<li>Node version 唔啱 → 升 22</li>
+<li>npm install SSL fail → 加 <code>NODE_OPTIONS=--use-system-ca</code></li>
+<li>Port 5173 / 4173 已被佔 → Vite 自動跳到下一個 port，留意 terminal print 嘅 URL</li>
+</ul>
+<p><strong>今日唔拆 codebase</strong>。H3 / H4 自然會 touch code，到時自然見到 file structure，學得實在。</p>
+<hr>
+<h3>Day 1 H2（60 min）— Codex 第一次讀你 vault</h3>
+<p><strong>目標</strong>：體驗「Codex 已經識我 vault」嘅 wow moment。</p>
+<p>呢小時介紹 <strong>3 條路</strong> 俾 Codex 讀你 vault：</p>
+<table>
+<thead>
+<tr>
+<th>路</th>
+<th>點 setup</th>
+<th>何時用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1. 直接讀 vault folder</td>
+<td>0 setup，<code>@cwd &lt;vault&gt;</code> 即可</td>
+<td>課堂主軸，95% 用 case 嘅 default</td>
+</tr>
+<tr>
+<td>2. Obsidian MCP server</td>
+<td>裝 plugin + npm install + Codex config</td>
+<td>想 live 同 Obsidian 同步 / search / link 操作</td>
+</tr>
+<tr>
+<td>3. Obsidian CLI</td>
+<td>裝 npm 套件，叫 command</td>
+<td>Power user / 進階 scripting</td>
+</tr>
+</tbody></table>
+<h4>Step 1 — 路 1：直接讀 vault folder（30 min）</h4>
+<p>最簡單。Codex Desktop 本身就識讀 markdown / text file，你只需要話佢知 vault 喺邊。</p>
+<p><strong>做法</strong>：</p>
+<ol>
+<li>喺 Codex Desktop 開 chat 加一句 <code>@cwd &lt;vault path&gt;</code>：<ul>
+<li>Windows：<code>@cwd C:\Users\&lt;你&gt;\Desktop\Obsidian</code></li>
+<li>Mac：<code>@cwd /Users/&lt;你&gt;/Desktop/Obsidian</code></li>
+<li>Linux：<code>@cwd /home/&lt;你&gt;/Obsidian</code></li>
+</ul>
+</li>
+<li>問 Codex：</li>
+</ol>
+<pre><code>列出 `40 - Daily/` folder 入面所有 .md 文件，
+每個 output 一行：file name + frontmatter 入面嘅 date。
+</code></pre>
+<p>Codex 用 file system tool 行 vault folder → 讀 frontmatter → 出 list。</p>
+<p><strong>🎉 Wow moment</strong>：Codex 真係可以讀你 vault 任何 file，唔係 hallucinate。</p>
+<p>繼續試呢幾條：</p>
+<ul>
+<li>「揾我 vault 入面最後 3 個改動嘅 file」</li>
+<li>「我 inbox folder 有幾多個 unsorted note？」</li>
+<li>「我 tasks/ folder 入面 status 係 doing 嘅 task 有邊個？」</li>
+</ul>
+<h4>Step 2 — 路 2：Obsidian MCP server（20 min）</h4>
+<p>MCP = Model Context Protocol。Obsidian MCP server = 將 vault expose 做 Codex tool，比直接 read 更深層整合。</p>
+<p><strong>做法</strong>：</p>
+<ol>
+<li><strong>Obsidian app</strong>：Settings → Community plugins → Browse → 搜「Local REST API」→ Install + Enable</li>
+<li><strong>拎 API key</strong>：Settings → Local REST API → Copy API key + 記住 port (default <code>127.0.0.1:27124</code>)</li>
+<li><strong>裝 obsidian-mcp-server</strong>（terminal）：<pre><code class="language-bash">npx obsidian-mcp-server --help
+</code></pre>
+</li>
+<li><strong>Wire 入 Codex Desktop</strong>：Settings → MCP servers → Add：<pre><code class="language-json">{
+  &quot;obsidian&quot;: {
+    &quot;command&quot;: &quot;npx&quot;,
+    &quot;args&quot;: [&quot;obsidian-mcp-server&quot;],
+    &quot;env&quot;: {
+      &quot;OBSIDIAN_API_KEY&quot;: &quot;&lt;step 2 拎嘅 key&gt;&quot;,
+      &quot;OBSIDIAN_HOST&quot;: &quot;127.0.0.1:27124&quot;
+    }
+  }
+}
+</code></pre>
+</li>
+<li><strong>Restart Codex Desktop</strong></li>
+<li><strong>試 prompt</strong>：<pre><code>用 obsidian MCP 工具，列出我 vault 嘅所有 folder 名 + 每個 folder 有幾多 file。
+</code></pre>
+</li>
+</ol>
+<p>Codex 應該 call MCP tool 出 list。</p>
+<h4>Step 3 — 路 3：Obsidian CLI teaser（10 min）</h4>
+<p>第三方 npm 套件 <code>obsidian-cli</code>，唔由 Obsidian 官方維護。</p>
+<pre><code class="language-bash">npx obsidian-cli --help
+npx obsidian-cli open &quot;30 - Notes/2026-05-25.md&quot;
+# 直接喺 Obsidian app 開呢個 note
+</code></pre>
+<p>適合自動化 script。課堂唔深入，你之後自己研究。</p>
+<h4>3 條路 trade-off 總結</h4>
+<ul>
+<li><strong>路 1</strong>（直接讀） = <strong>95% 用 case 嘅 default</strong>。0 setup，最 portable</li>
+<li><strong>路 2</strong> (MCP) = 需要 Codex 同 Obsidian 雙向互動嘅 advanced setup</li>
+<li><strong>路 3</strong> (CLI) = 寫 script 自動化嘅 power user 工具</li>
+</ul>
+<hr>
+<h3>Day 1 H3（60 min）— 我想加 reading list 入我個 OS</h3>
+<p><strong>目標</strong>：跟一個 concrete example，「我想加 reading list」由 0 行到完。你之後識自己加任何 entity。</p>
+<h4>Step 1 — 喺 vault 開 reading/ folder（10 min）</h4>
+<p>喺 Obsidian app：</p>
+<ol>
+<li>揀位 → create new folder「reading」</li>
+<li>入面 create 3 本書嘅 markdown：</li>
+</ol>
+<p><code>reading/r-001.md</code>：</p>
+<pre><code>---
+id: r-001
+title: 《Building a Second Brain》
+author: Tiago Forte
+status: reading
+started_at: 2026-04-15
+finished_at: null
+rating: null
+---
+
+Tiago 嘅 CODE framework: Capture / Organize / Distill / Express。
+</code></pre>
+<p>仿照寫多 2 本書（其中一本 status 用 <code>finished</code> + rating；另一本 <code>not-started</code>）。</p>
+<p><strong>重點</strong>：Frontmatter 入面嘅 field 係你<strong>自己 design</strong>。</p>
+<h4>補充：vault folder 命名彈性</h4>
+<p>樣板 vault 用 <code>40 - Daily/</code> / <code>30 - Notes/</code> / <code>00 - Inbox/</code> 呢類 Johnny Decimal / PARA 風格命名，但<strong>你自己 vault 用乜名都得</strong>。</p>
+<p>例如你 vault 用：</p>
+<ul>
+<li><code>Daily/</code> 取代 <code>40 - Daily/</code></li>
+<li><code>Atomic Notes/</code> 取代 <code>30 - Notes/</code></li>
+<li><code>Brain Dump/</code> 取代 <code>00 - Inbox/</code></li>
+</ul>
+<p>只需要喺 <code>scripts/sync-vault.mjs</code> 對應改返 folder path 就 work：</p>
+<pre><code class="language-javascript">// 樣板：
+const files = await fg(&quot;40 - Daily/*.md&quot;, { cwd: VAULT_DIR, absolute: true });
+
+// 你 vault 用其他名：
+const files = await fg(&quot;Daily/*.md&quot;, { cwd: VAULT_DIR, absolute: true });
+</code></pre>
+<p><code>fast-glob</code> 嘅 pattern 食任何 folder 名，唔限定。</p>
+<h4>Step 2 — 改 sync-vault.mjs 加新 entity（15 min）</h4>
+<p>Codex Desktop chat：</p>
+<pre><code>@cwd dotai-personal-os
+
+我嘅 vault `reading/` folder 入面每個 markdown 有 frontmatter：
+- id (string)
+- title (string)
+- author (string)
+- status: &quot;not-started&quot; | &quot;reading&quot; | &quot;finished&quot;
+- started_at (date 或 null)
+- finished_at (date 或 null)
+- rating: 1-5 或 null
+
+跟 scripts/sync-vault.mjs 入面 syncTasks() 嘅 pattern，
+加一個 syncReadingList() function：
+- 讀 reading/*.md
+- 食 frontmatter
+- 寫去 public/data/reading.json
+- main() 入面 await + console.log summary
+
+唔好 rewrite 其他 function，淨係加新 function + main() 入面加 await。
+</code></pre>
+<p>Codex 會 mirror syncTasks pattern 出新 function。你 review + accept。</p>
+<p>跑 verification：</p>
+<pre><code class="language-bash">npm run sync:vault
+cat public/data/reading.json
+</code></pre>
+<h4>Step 3 — 加新 view 顯示 reading list（20 min）</h4>
+<p>Codex prompt：</p>
+<pre><code>@cwd dotai-personal-os
+
+我想加新 view ReadingListView：
+- 讀 /data/reading.json (array of { id, title, author, status, rating })
+- 按 status 分 3 個 group：reading / not-started / finished
+- 每 group 一個 card，入面 list books
+- 每本書顯示 title + author + rating (★ × rating，0/null 顯示 &quot;—&quot;)
+
+跟 src/views/TasksView.tsx 嘅 5 步 pattern：
+1. import + types
+2. function 名 + export default
+3. useState 揾 data
+4. useEffect 拎 data
+5. render（包 loading + empty state）
+
+寫入 src/views/ReadingListView.tsx。
+記得喺 src/lib/types.ts 加 Reading interface。
+</code></pre>
+<p>跟住 wire 入 App.tsx：</p>
+<pre><code>@cwd dotai-personal-os
+
+src/App.tsx 加多一個 view 「reading」：
+- 加 import { BookMarked } from &#39;lucide-react&#39;
+- 加 import ReadingListView from &#39;./views/ReadingListView&#39;
+- View type 加 &#39;reading&#39;
+- NAV array 加 { id: &quot;reading&quot;, label: &quot;Reading&quot;, icon: BookMarked }
+- 條件 render 加 {view === &quot;reading&quot; &amp;&amp; &lt;ReadingListView /&gt;}
+
+只 diff 改動，唔 rewrite 成個 App.tsx。
+</code></pre>
+<p>跑 <code>npm run dev</code> → sidebar 見多咗 Reading → 切過去 → 3 本書按 status 分組 render。</p>
+<p><strong>🎉 Wow moment</strong>：30 分鐘前 vault 無 reading list data，而家 dashboard 已 render。</p>
+<h4>補充：學員 vault 用 Obsidian Tasks plugin checkbox 嘅情況</h4>
+<p>有啲學員 vault 用緊 <strong>Obsidian Tasks plugin</strong> 嘅 <code>- [ ] task title</code> 格式，唔係 frontmatter。</p>
+<p>兩種 sync-vault.mjs 都食得：</p>
+<ul>
+<li><strong>Frontmatter task</strong> (<code>tasks/*.md</code> file)：精細，有 id / created_at / 完整 description</li>
+<li><strong>Checkbox task</strong> (任何 .md 入面嘅 <code>- [ ]</code> line)：輕量，ID 自動 generate</li>
+</ul>
+<p>Checkbox status mapping：</p>
+<ul>
+<li><code>- [ ]</code> → todo</li>
+<li><code>- [/]</code> 或 <code>- [-]</code> → doing</li>
+<li><code>- [x]</code> 或 <code>- [X]</code> → done</li>
+</ul>
+<p>你 vault 用邊種都得。</p>
+<h4>Step 4 — 自己加另一個 entity（15 min）</h4>
+<p>揀一個自己想加嘅 entity（<strong>1 個</strong>）：</p>
+<ul>
+<li>habits（id / name / streak / last_done_at）</li>
+<li>projects（id / name / status / last_active_at）</li>
+<li>contacts（id / name / company / last_contacted_at）</li>
+<li>decisions（id / question / decision / decided_at / reason）</li>
+</ul>
+<p>跟 H3 Step 1-3 流程做：vault 寫 sample → Codex 加 syncXxx() → 加 view → wire App → verify。</p>
+<hr>
+<h3>Day 1 H4（60 min）— 自己 ship 一個 component</h3>
+<p><strong>目標</strong>：你自己 propose 一個 component spec，Codex 出 code，你 wire 入 view，render 自己 vault data。</p>
+<h4>Step 1 — Component 嘅 5 步 pattern recap（10 min）</h4>
+<p>Codex Desktop output window 開 <code>src/views/TasksView.tsx</code>，每個 view 都係呢個結構：</p>
+<pre><code class="language-typescript">// 1. import + types
+import { useEffect, useState } from &quot;react&quot;;
+import { fetchJson } from &quot;../lib/fetchJson&quot;;
+import type { Task } from &quot;../lib/types&quot;;
+
+// 2. component function
+export default function TasksView() {
+  // 3. state
+  const [tasks, setTasks] = useState&lt;Task[] | null&gt;(null);
+
+  // 4. effect — fetch on mount
+  useEffect(() =&gt; {
+    fetchJson&lt;Task[]&gt;(&quot;/data/tasks.json&quot;, []).then(setTasks);
+  }, []);
+
+  // 5. render — handle loading / empty / data
+  if (tasks === null) return &lt;div&gt;Loading…&lt;/div&gt;;
+  if (tasks.length === 0) return &lt;div&gt;No tasks&lt;/div&gt;;
+  return &lt;ul&gt;{tasks.map(t =&gt; &lt;li key={t.id}&gt;{t.title}&lt;/li&gt;)}&lt;/ul&gt;;
+}
+</code></pre>
+<p>5 步 = 90% React component。</p>
+<h4>Step 2 — 寫自己 component spec（10 min）</h4>
+<p>寫一句 spec：「我想要 component 顯示 <X>，by <Y>」。</p>
+<p>範例：</p>
+<ul>
+<li>「render 本週嘅 daily notes，highlight 今日」</li>
+<li>「render Content drafts，by platform 分 group」</li>
+<li>「render task by category，每個 category 一個 card」</li>
+</ul>
+<p><strong>好嘅 spec</strong>：1 個 data source，1 個 transformation，1 個 visual pattern。</p>
+<h4>Step 3 — Codex 出 code（25 min）</h4>
+<p>Codex prompt template：</p>
+<pre><code>@cwd dotai-personal-os
+
+我想要新 component `&lt;ComponentName&gt;View.tsx`：
+
+**Data source**：讀 `/data/&lt;file&gt;.json`
+**Type**：&lt;把 type 描述出嚟，例：Array&lt;{ id, title, category, dueDate }&gt;&gt;
+**Transform**：&lt;點 group / filter / sort&gt;
+**Visual**：&lt;點顯示，例「每個 group 一個 card，card 入面 list items」&gt;
+
+跟 src/views/TasksView.tsx 嘅 5 步 pattern。
+寫 strict TypeScript。
+記得喺 src/lib/types.ts 加新 interface 如果需要。
+唔好改 App.tsx，wire-up 我自己做。
+</code></pre>
+<p>Paste Codex output → save → 睇 Codex Desktop output window 有冇紅線。</p>
+<h4>Step 4 — Wire 入 App.tsx（10 min）</h4>
+<pre><code>@cwd dotai-personal-os
+
+加多一個 view『&lt;name&gt;』入 sidebar（改 src/App.tsx）：
+- 加 import 對應 component
+- 加適合嘅 lucide-react icon
+- View type union 加新 view name
+- NAV array 加 entry
+- 條件 render 加
+
+只 diff 改動，唔 rewrite 成個 file。
+</code></pre>
+<p>跑 <code>npm run dev</code> → 切去新 view → render 出你 data。</p>
+<h4>如果撞 error（contingency）</h4>
+<p>Codex 寫嘅 code 多數會 work。撞到嘅話用呢個 follow-up prompt：</p>
+<pre><code>@cwd dotai-personal-os
+
+我啱啱 ship 你寫嘅 &lt;ComponentName&gt;View.tsx，
+跑 npm run dev 出咗以下 error：
+&lt;paste error&gt;
+
+幫我：
+1. 解釋呢個 error 嘅 root cause（唔好 dump code 住）
+2. 提議最 minimal 嘅 fix
+3. 點 verify fix work
+</code></pre>
+<p><strong>重點</strong>：撞 error 唔係 fail，係正常 dev workflow 嘅一 part。Codex 識自己解釋自己嘅 code，可以做 debug partner。</p>
+<hr>
+<h2>Day 2：Production（4 小時）</h2>
+<p>Day 1 你 ship 咗跑得起嘅 dashboard。Day 2 你會：</p>
+<ol>
+<li>學 Git workflow + 配合 Codex 寫 commit message</li>
+<li>用 LLM 將 raw vault data 統整做 insight</li>
+<li>自己再 ship 一個更大嘅 feature</li>
+<li>Polish + (optional) deploy 上 Vercel</li>
+</ol>
+<hr>
+<h3>Day 2 H1（60 min）— Git workflow + Codex 配 Git</h3>
+<p><strong>目標</strong>：行完完整 Git workflow（fork → branch → commit → push → PR → merge → pull upstream），識用 Codex 寫 commit message。</p>
+<h4>Step 1 — Git mental model recap（15 min）</h4>
+<pre><code>[你電腦 file]
+       ↕ git add / git restore
+[Staging area]
+       ↕ git commit / git reset
+[Local repo (.git/)]
+       ↕ git push / git pull
+[Remote repo (GitHub)]
+</code></pre>
+<p>3 個 state、4 條 transition。</p>
+<h4>Step 2 — 8 條 essential command（15 min）</h4>
+<pre><code class="language-bash"># 1. Status — 永遠先睇
+git status
+
+# 2. 開 branch
+git switch -c feat/&lt;feature-name&gt;
+
+# 3. Stage 改動
+git add &lt;file1&gt; &lt;file2&gt;
+# 或者全部
+git add -A
+
+# 4. Commit
+git commit -m &quot;feat: short description&quot;
+
+# 5. Push branch
+git push -u origin feat/&lt;feature-name&gt;
+
+# 6. 開 PR
+gh pr create --title &quot;feat: short description&quot; --body &quot;longer explanation&quot;
+
+# 7. Merge + cleanup
+gh pr merge --squash --delete-branch
+git switch main &amp;&amp; git pull
+
+# 8. 拎 upstream update
+git fetch upstream
+git merge upstream/main
+</code></pre>
+<p><strong>永遠 branch 做新嘢</strong>，唔好直接 commit main。</p>
+<p><strong>Commit message format</strong>：<code>&lt;type&gt;: &lt;≤ 60 char summary&gt;</code></p>
+<ul>
+<li><code>feat</code>: 新功能</li>
+<li><code>fix</code>: 修 bug</li>
+<li><code>docs</code>: 改 README / doc</li>
+<li><code>refactor</code>: 改 code 但唔改行為</li>
+<li><code>chore</code>: dependencies / config</li>
+</ul>
+<h4>Step 3 — Codex 寫 commit message（10 min）</h4>
+<pre><code>@cwd dotai-personal-os
+
+我 stage 咗以下改動：
+&lt;paste `git diff --staged` 結果&gt;
+
+幫我寫一句 commit message：
+- conventional commits format
+- ≤ 60 char
+- focus 喺 WHY 唔係 WHAT
+</code></pre>
+<p>Codex 識讀 diff 推 commit message。</p>
+<h4>Step 4 — 開 PR + merge + pull upstream（20 min）</h4>
+<p>學員 PR 開咗之後，喺 GitHub web UI：</p>
+<ol>
+<li>Reviewers 自選一個同學</li>
+<li>同學 review code → approve</li>
+<li><code>gh pr merge --squash --delete-branch</code></li>
+<li>本機 <code>git switch main &amp;&amp; git pull origin main</code></li>
+</ol>
+<p>拎 upstream update：</p>
+<pre><code class="language-bash">git fetch upstream
+git switch main
+git merge upstream/main
+git push origin main
+</code></pre>
+<p><strong>三個 remote 概念</strong>：</p>
+<ul>
+<li><code>origin</code> = 你嘅 fork</li>
+<li><code>upstream</code> = 原 repo（fork 自動設）</li>
+<li>永遠唔好 push 去 <code>upstream</code>，你冇權限</li>
+</ul>
+<hr>
+<h3>Day 2 H2（60 min）— LLM 統整 raw → insight</h3>
+<p><strong>目標</strong>：唔再淨係 display data，而係自動 summarize — 今日 top 3 priority / 本週 top topic / 卡 7 日嘅 draft / morning brief。</p>
+<h4>Step 1 — Insight pattern（10 min）</h4>
+<p>3 種 pattern：</p>
+<pre><code>Raw data       Transform        Insight
+---------      ---------        -------
+tasks.json  →  filter + sort →  &quot;今日要做：t-001 / t-003 / t-002&quot;
+drafts/*    →  age &gt; 7 days →  &quot;d-techpulse-001 卡 8 日 drafting&quot;
+daily-*.md  →  word freq    →  &quot;本周 top topic: &#39;Codex 網課&#39;&quot;
+</code></pre>
+<h4>Step 2 — 純 JS stats（15 min）</h4>
+<p>先喺 <code>package.json</code> <code>scripts</code> 加一條：</p>
+<pre><code class="language-json">&quot;insights&quot;: &quot;node scripts/insights.mjs&quot;
+</code></pre>
+<p>之後就可以跑 <code>npm run insights</code> 而唔需要 <code>node scripts/insights.mjs</code>，pattern 同 <code>npm run sync:vault</code> 對齊。</p>
+<p><code>scripts/insights.mjs</code>：</p>
+<pre><code class="language-javascript">import { readFile, writeFile } from &quot;node:fs/promises&quot;;
+import { join, dirname } from &quot;node:path&quot;;
+import { fileURLToPath } from &quot;node:url&quot;;
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const DATA_DIR = join(__dirname, &quot;..&quot;, &quot;public&quot;, &quot;data&quot;);
+
+async function loadJson(name) {
+  return JSON.parse(await readFile(join(DATA_DIR, `${name}.json`), &quot;utf8&quot;));
+}
+
+function topPriorityTasks(tasks) {
+  return tasks
+    .filter(t =&gt; t.status !== &quot;done&quot;)
+    .slice(0, 3)
+    .map(t =&gt; `${t.id} ${t.title}`);
+}
+
+function stuckDrafts(drafts) {
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  return drafts
+    .filter(d =&gt; d.status === &quot;drafting&quot; &amp;&amp; new Date(d.updatedAt).getTime() &lt; sevenDaysAgo)
+    .map(d =&gt; `${d.id} (${d.platform}) 卡 ${Math.floor((Date.now() - new Date(d.updatedAt).getTime()) / 86400000)} 日`);
+}
+
+async function main() {
+  const tasks = await loadJson(&quot;tasks&quot;);
+  const drafts = await loadJson(&quot;content-drafts&quot;);
+
+  const insight = {
+    today: new Date().toISOString().slice(0, 10),
+    topPriority: topPriorityTasks(tasks),
+    stuckDrafts: stuckDrafts(drafts)
+  };
+
+  await writeFile(join(DATA_DIR, &quot;insights.json&quot;), JSON.stringify(insight, null, 2));
+  console.log(insight);
+}
+
+main();
+</code></pre>
+<p>跑 <code>npm run insights</code> → 見 output。</p>
+<h4>Step 3 — LLM-augmented narrative summary（20 min）</h4>
+<p>純 JS 只可以做 stats，narrative summary 要用 LLM。</p>
+<p>Codex prompt：</p>
+<pre><code>@cwd dotai-personal-os
+
+讀以下 vault data：
+- public/data/tasks.json
+- public/data/daily-notes.json (近 7 日)
+
+寫一段 ≤ 100 字粵語 morning brief：
+- 今日 3 件要做
+- 本週做最多嘅範疇
+- 任何 risk signal（task overdue / draft 卡）
+
+直接 output 段 text，唔好寫 code。
+</code></pre>
+<h4>Step 4 — Wire 入 dashboard（10 min）</h4>
+<p>寫 <code>src/views/InsightsView.tsx</code> 讀 <code>insights.json</code>：</p>
+<pre><code class="language-typescript">import { useEffect, useState } from &quot;react&quot;;
+import { fetchJson } from &quot;../lib/fetchJson&quot;;
+
+interface Insights {
+  today: string;
+  topPriority: string[];
+  stuckDrafts: string[];
+}
+
+export default function InsightsView() {
+  const [data, setData] = useState&lt;Insights | null&gt;(null);
+  useEffect(() =&gt; {
+    fetchJson&lt;Insights | null&gt;(&quot;/data/insights.json&quot;, null).then(setData);
+  }, []);
+
+  if (!data) return &lt;div&gt;跑 `npm run insights` 先 generate insights。&lt;/div&gt;;
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Insights&lt;/h1&gt;
+      &lt;p&gt;{data.today}&lt;/p&gt;
+      &lt;section&gt;
+        &lt;h2&gt;Top priority&lt;/h2&gt;
+        &lt;ul&gt;{data.topPriority.map(t =&gt; &lt;li key={t}&gt;{t}&lt;/li&gt;)}&lt;/ul&gt;
+      &lt;/section&gt;
+      &lt;section&gt;
+        &lt;h2&gt;Stuck drafts&lt;/h2&gt;
+        &lt;ul&gt;{data.stuckDrafts.map(d =&gt; &lt;li key={d}&gt;{d}&lt;/li&gt;)}&lt;/ul&gt;
+      &lt;/section&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h4>Step 5 — Wire 入 App.tsx（5 min）</h4>
+<pre><code>@cwd dotai-personal-os
+
+src/App.tsx 加多一個 view 「insights」入 sidebar：
+- 加 import { Sparkles } from &#39;lucide-react&#39;
+- 加 import InsightsView from &#39;./views/InsightsView&#39;
+- View type union 加 &#39;insights&#39;
+- NAV array 加 entry { id: &quot;insights&quot;, label: &quot;Insights&quot;, icon: Sparkles }
+- 條件 render 加
+
+只 diff 改動，唔 rewrite 成個 file。
+</code></pre>
+<p>跑 <code>npm run insights</code> → <code>npm run dev</code> → 切去 Insights view 應該見到 today&#39;s brief。</p>
+<h4>教學重點</h4>
+<p><strong>Stats first, LLM second</strong> — 純 stats cheap + deterministic，LLM 只用嚟 narrative，唔係每個 data point 都 push 去 LLM。</p>
+<hr>
+<h3>Day 2 H3（60 min）— 自己 ship 一個更大 feature</h3>
+<p><strong>目標</strong>：每位學員 ship 1 個自己嘅 feature。</p>
+<p>每位 5 min spec → 5 min Codex 出 code → 2 min demo（共 12 min/位 × 5 學員 = 60 min）。</p>
+<h4>Feature 候選</h4>
+<p>如果你想唔到，揀一個：</p>
+<ol>
+<li><strong>Task tag filter</strong> — tasks frontmatter 加 <code>tags: []</code>，TasksView 加 tag chip filter</li>
+<li><strong>Daily streak counter</strong> — Vault Health 加「連續寫咗 N 日 daily note」stat</li>
+<li><strong>Weekly review summary</strong> — Insights 加「上週 ship N 個 task / N 條 draft」</li>
+<li><strong>Quick capture form</strong> — App header 加 input box + Enter 寫新 task md file</li>
+<li><strong>Project status view</strong> — <code>projects/*.md</code> frontmatter <code>last_active_at</code>，新 view list project sorted by stale-ness</li>
+</ol>
+<h4>流程</h4>
+<p><strong>Min 0-5 — Spec</strong>：講比老師聽，老師 1 min 確認 scope。</p>
+<p><strong>Min 5-10 — Codex 出 code</strong>：</p>
+<pre><code>@cwd dotai-personal-os
+
+我要 ship 以下 feature：&lt;簡單講你個 feature&gt;。
+
+要求：
+1. &lt;第 1 個 file 要改 + 點改&gt;
+2. &lt;第 2 個 file 要改 + 點改&gt;
+3. &lt;...&gt;
+
+唔好寫 test，唔好 rewrite 唔關事嘅 file。
+逐個 file diff 形式 output。
+</code></pre>
+<p><strong>Min 10-12 — Verify</strong>：</p>
+<pre><code class="language-bash">npm run sync:vault
+# dev server 已開 — hot reload
+</code></pre>
+<p>切去新 feature 見 work — 鼓掌。</p>
+<p>如 fail：用 Codex「解釋呢個 error + propose fix」debug prompt。</p>
+<hr>
+<h3>Day 2 H4（60 min）— Polish + Demo + (Optional) Deploy + Q&amp;A</h3>
+<p><strong>目標</strong>：你 polish 自己 OS、demo 比同學睇、optional deploy 上 Vercel、Q&amp;A。</p>
+<h4>Step 1 — Polish（20 min）</h4>
+<ul>
+<li><code>npm run build</code> verify production bundle 跑得起</li>
+<li>改 <code>index.html</code> title 做自己名</li>
+<li>改 <code>src/App.tsx</code> sidebar header 「Personal OS」做自己 OS 名</li>
+<li>揀一個 Tailwind 顏色 customize <code>tailwind.config.js</code> brand color</li>
+</ul>
+<pre><code>@cwd dotai-personal-os
+
+我想 dashboard 改 dark mode default — 你建議：
+1. Tailwind dark mode strategy: &#39;class&#39; 定 &#39;media&#39;?
+2. 點改 index.html / App.tsx / index.css 最少改動 ship?
+3. Trade-off 寫返一段。
+</code></pre>
+<h4>Step 2 — Demo carousel（25 min）</h4>
+<p>每位學員 5 min demo：</p>
+<ul>
+<li>開 own localhost:4173</li>
+<li>Walkthrough：sidebar / 5+ view / 自己加嘅 feature / 自己 vault data</li>
+<li>1 個 wow moment（你揀）</li>
+<li>1 個 fail moment（坦白講撞咗咩問題、Codex 點幫）</li>
+</ul>
+<h4>Step 3 — Q&amp;A（10 min）</h4>
+<p>常見問題：</p>
+<ul>
+<li><strong>點 sync 我兩部機嘅 vault？</strong> Git 推 vault 做 repo / iCloud / Syncthing。Personal OS 唔擁有 sync，vault 同步邊個 tool 都得。</li>
+<li><strong>想要 mobile app 點？</strong> Level 3 teaser — React Native + 同一 sync 層</li>
+<li><strong>學員 vault 上傳 GitHub safe 唔 safe？</strong> Private repo OR vault folder 入 <code>.gitignore</code> 揀 export</li>
+<li><strong>點搞 production deploy？</strong> 睇下面「課後：自己 deploy + 維護」section</li>
+<li><strong>LLM cost 點 control？</strong> Codex CLI per-prompt 計、insight script 一日跑一次 cron</li>
+</ul>
+<h4>Step 3.5 — Deploy 示範（30 min，optional bonus）</h4>
+<p>如果時間夠，老師示範一次「自己 deploy」流程。詳細步驟睇下一 section「課後：自己 deploy + 維護」。</p>
+<h4>Step 4 — Level 3 teaser + 收尾（5 min）</h4>
+<p><strong>Level 3 預告</strong>：</p>
+<ul>
+<li>Multi-device sync (vault Git push + cron sync)</li>
+<li>2-way sync (frontend edit 寫返 vault file via REST API)</li>
+<li>Mobile (React Native 配同一 sync layer)</li>
+<li>Agent loop (Codex 每朝 scan vault 自動 propose insight)</li>
+</ul>
+<p><strong>真正 take-away</strong>：你而家有一個跑得起 + 自己 schema 嘅 personal OS，由今晚開始用。</p>
+<p><strong>下一步</strong>：每日 5 min 用 → 一週後 evaluate 邊個 view 真係用、邊個唔用 → 自己 evolve。</p>
+<hr>
+<h2>課後：自己 deploy + 維護</h2>
+<p>你完課後可以將自己 OS 推上 cloud，攞返一條 URL 任何地方打開都用得到。</p>
+<h3>整個 deploy 嘅 mental model</h3>
+<pre><code>[你電腦嘅 Obsidian vault]
+       ↓ 跑 npm run sync:vault
+[dashboard repo 入面 public/data/*.json]
+       ↓ git add + git commit + git push
+[GitHub private repo]
+       ↓ Vercel webhook 收到 push
+[Vercel build: npm install + npm run build]
+       ↓ 出 dist/ static bundle
+[Vercel CDN serve URL]
+       ↓ 訪客打開 URL
+[Vercel Edge Middleware 攔截 → 要密碼]
+       ↓ 輸入啱嘅密碼
+[Dashboard render，你睇到自己 OS]
+</code></pre>
+<p><strong>4 層私隱保護</strong>：</p>
+<ol>
+<li>GitHub repo private（vault JSON 唔公開）</li>
+<li>Vercel project private（dashboard URL random hash）</li>
+<li>Edge Middleware Basic Auth（要密碼先入到）</li>
+<li>noindex meta（Google 唔 index）</li>
+</ol>
+<h3>⚠️ 開始之前必讀</h3>
+<p><strong>Vercel 唔識讀你部機上嘅 vault</strong>。Vercel build machine 喺 cloud，只睇到你 GitHub repo 入面嘅 file。</p>
+<p>所以工作流程係：</p>
+<ol>
+<li>喺<strong>自己機</strong>用 <code>npm run sync:vault</code> 將 vault → JSON</li>
+<li>將 JSON <code>git commit</code> 入 repo</li>
+<li><code>git push</code> 上 GitHub</li>
+<li>Vercel 從 GitHub 拎已 build 好嘅 JSON，serve 出去</li>
+</ol>
+<p><strong>呢個 = vault JSON 真係會去到 GitHub 同 Vercel</strong>。所以：</p>
+<ul>
+<li>GitHub repo 必須 <code>--private</code></li>
+<li>Vercel URL 必須有密碼 gate</li>
+</ul>
+<p>呢 2 樣係 <strong>mandatory</strong>，唔係 optional。</p>
+<h3>Step 1 — Repo 設 Private</h3>
+<p>如果你 fork 自老師 repo，先改 private：</p>
+<ol>
+<li>GitHub repo settings → 拉到底「Danger Zone」</li>
+<li>撳「Change repository visibility」→ Private</li>
+<li>確認：repo 名側邊有🔒 icon</li>
+</ol>
+<p>如果由零起：</p>
+<pre><code class="language-bash">gh repo create &lt;你嘅 username&gt;/dotai-personal-os --private --source=. --push
+</code></pre>
+<h3>Step 2 — 開 Vercel account</h3>
+<ol>
+<li>去 <a href="https://vercel.com/signup">https://vercel.com/signup</a></li>
+<li>揀「Continue with GitHub」</li>
+<li>Authorize Vercel access 你 GitHub</li>
+<li>揀 Hobby plan（免費）</li>
+</ol>
+<h3>Step 3 — Import GitHub repo</h3>
+<p>Vercel dashboard：</p>
+<ol>
+<li>撳「Add New」→「Project」</li>
+<li>揀「Import Git Repository」</li>
+<li>揀「dotai-personal-os」</li>
+<li>撳「Import」</li>
+</ol>
+<h3>Step 4 — 配置 build</h3>
+<p>Vercel auto-detect Vite：</p>
+<ul>
+<li><strong>Framework Preset</strong>: Vite</li>
+<li><strong>Build Command</strong>: <code>npm run build</code>（<strong>default OK，唔好加 sync:vault</strong>）</li>
+<li><strong>Output Directory</strong>: <code>dist</code></li>
+<li><strong>Install Command</strong>: <code>npm install</code></li>
+</ul>
+<p><strong>重要：唔好將 build command 改做 <code>npm run sync:vault &amp;&amp; npm run build</code></strong>。Vercel build machine 冇你 vault file，sync 跑出嚟係空會 overwrite 已 commit 嘅 JSON。</p>
+<p>正確流程：<strong>本機 sync → commit JSON → Vercel build 已 commit 嘅 JSON</strong>。</p>
+<h3>Step 5 — 加密碼保護（Edge Middleware）</h3>
+<p>呢步係<strong>整個 deploy 嘅核心安全層</strong>。</p>
+<h4>5.1 — 加 <code>middleware.ts</code> 喺 project root</h4>
+<pre><code class="language-typescript">// middleware.ts at project root
+
+export const config = {
+  matcher: [&#39;/((?!_static|favicon|robots\\.txt).*)&#39;]
+};
+
+export default function middleware(request: Request) {
+  const auth = request.headers.get(&#39;authorization&#39;);
+
+  if (auth) {
+    const encoded = auth.split(&#39; &#39;)[1];
+    const decoded = atob(encoded);
+    const [, password] = decoded.split(&#39;:&#39;);
+    if (password === process.env.SITE_PASSWORD) {
+      return; // pass through
+    }
+  }
+
+  return new Response(&#39;Authentication required&#39;, {
+    status: 401,
+    headers: {
+      &#39;WWW-Authenticate&#39;: &#39;Basic realm=&quot;Personal OS&quot;&#39;,
+      &#39;Content-Type&#39;: &#39;text/plain&#39;
+    }
+  });
+}
+</code></pre>
+<h4>5.2 — Vercel env var</h4>
+<p>Vercel project → Settings → Environment Variables：</p>
+<ul>
+<li><strong>Name</strong>: <code>SITE_PASSWORD</code></li>
+<li><strong>Value</strong>: 你揀嘅密碼（建議 12+ 字符）</li>
+<li><strong>Environments</strong>: 揀 Production + Preview + Development 全部</li>
+</ul>
+<p>撳「Save」。</p>
+<h3>Step 6 — 第一次 Deploy</h3>
+<p>Vercel dashboard 撳「Deploy」。2-3 分鐘後出條 URL：<code>https://dotai-personal-os-&lt;hash&gt;.vercel.app</code></p>
+<p>打開 URL → browser 彈密碼框：</p>
+<pre><code>Sign in
+https://dotai-personal-os-xxx.vercel.app
+Username: (隨便填)
+Password: ********
+</code></pre>
+<p>輸入啱密碼 → 入到 dashboard 🎉
+輸入錯 → 彈框再彈 / 401 error。</p>
+<h3>Step 7 — 防 Google 索引</h3>
+<p><code>public/robots.txt</code> 已 ship：</p>
+<pre><code>User-agent: *
+Disallow: /
+</code></pre>
+<p><code>index.html</code> <code>&lt;head&gt;</code> 已加：</p>
+<pre><code class="language-html">&lt;meta name=&quot;robots&quot; content=&quot;noindex, nofollow&quot;&gt;
+</code></pre>
+<p>雙重保險。</p>
+<h3>之後嘅日常工作流程</h3>
+<p><strong>每次 vault 有 update</strong>：</p>
+<pre><code class="language-bash"># 1. 改 Obsidian vault file（喺 Obsidian app）
+
+# 2. 喺 dashboard repo 跑 sync
+VAULT_DIR=&quot;&lt;你 vault path&gt;&quot; npm run sync:vault
+
+# 3. Commit + push
+git add public/data/
+git commit -m &quot;sync vault $(date +%F)&quot;
+git push
+
+# 4. Vercel auto-deploy 2 min 後 URL 更新
+</code></pre>
+<p><strong>Windows PowerShell</strong>：</p>
+<pre><code class="language-powershell">$env:VAULT_DIR = &quot;C:\Users\你\Desktop\Obsidian&quot;
+npm run sync:vault
+git add public/data/
+git commit -m &quot;sync vault&quot;
+git push
+</code></pre>
+<p><strong>Rotate 密碼</strong>：</p>
+<ol>
+<li>Vercel → Settings → Env Vars → 改 <code>SITE_PASSWORD</code></li>
+<li>Vercel → Deployments → 揀最新一條 → Redeploy</li>
+<li>舊密碼即時失效</li>
+</ol>
+<h3>FAQ</h3>
+<p><strong>Q：免費 Hobby plan 夠嗎？</strong>
+A：100 GB bandwidth / 月 + 6000 build minute / 月。Personal OS 用法 &lt; 1% quota。</p>
+<p><strong>Q：每次 push 都會 deploy 嗎？</strong>
+A：Push 去 <code>main</code> branch = auto-deploy production。其他 branch = preview deployment。</p>
+<p><strong>Q：可以 share URL 比朋友睇？</strong>
+A：得，但仲要 share 密碼。課程完之後想收返 access，rotate 密碼即可。</p>
+<p><strong>Q：點睇 deploy log / error？</strong>
+A：Vercel dashboard → Deployments → 撳邊個 deploy → 睇 build log。99% bug 喺 log 入面有 hint。</p>
+<p><strong>Q：middleware.ts 第一次 deploy 撞 error 點算？</strong>
+A：跟 Vercel error message 提示安裝對應 package（最常見 <code>@vercel/edge</code>）。Update import + redeploy。</p>
+<hr>
+<h2>Reference Cheatsheet</h2>
+<h3>Codex prompt 模板（4 種最常用）</h3>
+<p><strong>1. 解 error</strong>：</p>
+<pre><code>@cwd dotai-personal-os
+我跑 &lt;command&gt; 出咗以下 error：
+&lt;paste error&gt;
+
+幫我：
+1. 解釋 root cause（唔好 dump code 住）
+2. 提議最 minimal 嘅 fix
+3. 點 verify fix work
+</code></pre>
+<p><strong>2. 加 entity</strong>：</p>
+<pre><code>@cwd dotai-personal-os
+
+我嘅 vault `&lt;folder&gt;/` 入面每個 markdown 有 frontmatter：
+- &lt;field 1&gt;
+- &lt;field 2&gt;
+- ...
+
+跟 scripts/sync-vault.mjs 入面 syncTasks() 嘅 pattern，
+加一個 sync&lt;XXX&gt;() function：
+- 讀 &lt;folder&gt;/*.md
+- 食 frontmatter
+- 寫去 public/data/&lt;x&gt;.json
+- main() 入面 await + console.log summary
+
+唔好 rewrite 其他 function。
+</code></pre>
+<p><strong>3. 寫新 component</strong>：</p>
+<pre><code>@cwd dotai-personal-os
+
+我想要新 component `&lt;ComponentName&gt;View.tsx`：
+
+**Data source**：讀 `/data/&lt;file&gt;.json`
+**Type**：&lt;把 type 描述出嚟&gt;
+**Transform**：&lt;點 group / filter / sort&gt;
+**Visual**：&lt;點顯示&gt;
+
+跟 src/views/TasksView.tsx 嘅 5 步 pattern。
+寫 strict TypeScript。
+記得喺 src/lib/types.ts 加 interface。
+</code></pre>
+<p><strong>4. Wire 入 App.tsx</strong>：</p>
+<pre><code>@cwd dotai-personal-os
+
+加多一個 view『&lt;name&gt;』入 sidebar（改 src/App.tsx）：
+- 加 import 對應 component
+- 加適合嘅 lucide-react icon
+- View type union 加新 view name
+- NAV array 加 entry
+- 條件 render 加
+
+只 diff 改動，唔 rewrite 成個 file。
+</code></pre>
+<h3>Git 8 條 essential command</h3>
+<pre><code class="language-bash">git status                                          # 永遠先睇
+git switch -c feat/&lt;name&gt;                          # 開 branch
+git add &lt;file&gt;                                      # stage
+git commit -m &quot;type: summary&quot;                       # commit
+git push -u origin feat/&lt;name&gt;                      # push
+gh pr create --title &quot;...&quot; --body &quot;...&quot;             # 開 PR
+gh pr merge --squash --delete-branch                # merge + cleanup
+git fetch upstream &amp;&amp; git merge upstream/main       # pull upstream
+</code></pre>
+<h3>撞 problem 點搵答案</h3>
+<p>5 條 fallback：</p>
+<ol>
+<li><strong>先 <code>git status</code></strong> — 50% 嘅 Git 問題答案喺度</li>
+<li><strong>睇 terminal 嘅 full output</strong>（唔好淨係睇最後一行）</li>
+<li><strong>Codex prompt template「解 error」</strong>（上面有）</li>
+<li><strong>Google 完整 error message</strong>（多數 Stack Overflow 有答案）</li>
+<li><strong>問 TA / 同學</strong></li>
+</ol>
+<h3>Common Errors 速查表</h3>
+<table>
+<thead>
+<tr>
+<th>症狀</th>
+<th>大機會 root cause</th>
+<th>Quick fix</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>npm install</code> 出 <code>UNABLE_TO_VERIFY_LEAF_SIGNATURE</code> + <code>Exit handler never called</code></td>
+<td>Norton / Symantec SSL MITM</td>
+<td><code>NODE_OPTIONS=--use-system-ca npm install</code></td>
+</tr>
+<tr>
+<td><code>npm install</code> 出 <code>EACCES permission denied</code></td>
+<td>npm cache 無權限</td>
+<td>Mac/Linux：<code>sudo chown -R $(whoami) ~/.npm</code>；Windows：以管理員身份打開 Codex Desktop</td>
+</tr>
+<tr>
+<td><code>npm run dev</code> 報 <code>Port 5173 is in use</code></td>
+<td>另一個 Vite 跑緊</td>
+<td>任由 Vite 自動跳 port，留意 terminal print 嘅實際 URL；或者 <code>lsof -i :5173</code> 找出 + kill</td>
+</tr>
+<tr>
+<td><code>npm run sync:vault</code> 出空 array</td>
+<td>VAULT_DIR 唔啱 / folder pattern 唔 match</td>
+<td>echo <code>$env:VAULT_DIR</code>（Windows）或 <code>echo $VAULT_DIR</code>（Mac/Linux）確認；ls VAULT_DIR 入面 folder 名同 sync 入面 <code>fg(&quot;...&quot;)</code> pattern 對應</td>
+</tr>
+<tr>
+<td>Codex Desktop 紅線「Property &#39;X&#39; is possibly &#39;null&#39;」</td>
+<td>TypeScript strict 揭咗 nullable mismatch</td>
+<td>Codex prompt：「呢個 error 解釋 root cause + 2 個 minimal fix」</td>
+</tr>
+<tr>
+<td>Browser 開 localhost 白屏</td>
+<td>Fetch fail / JSON shape 唔啱</td>
+<td>F12 開 Console 睇 error；check <code>public/data/&lt;file&gt;.json</code> 是否 valid JSON</td>
+</tr>
+<tr>
+<td><code>git push</code> 出 <code>Updates were rejected because the remote contains work</code></td>
+<td>遠端有你冇嘅 commit</td>
+<td><code>git pull --rebase</code> 拎遠端 commit 後再 push；唔好 <code>--force</code></td>
+</tr>
+<tr>
+<td><code>gh pr create</code> 出 <code>not a git repository</code></td>
+<td>cwd 唔係 git repo</td>
+<td><code>cd</code> 入啱嘅 folder；或者 <code>git remote -v</code> 確認 origin 設好</td>
+</tr>
+<tr>
+<td>Vercel deploy 出 middleware error</td>
+<td>Edge Middleware syntax 同 Vite 唔 compat</td>
+<td>跟 Vercel error 提示 <code>npm install @vercel/edge</code> + 改 import</td>
+</tr>
+<tr>
+<td>frontmatter <code>sync:vault</code> skip 個 file</td>
+<td>YAML syntax error（冒號後無空格 / 字符串包含特殊字符無加引號）</td>
+<td>開個 file 對住 <a href="#yaml-frontmatter-30-%E7%A7%92%E5%85%A5%E9%96%80">YAML primer</a> 4 條規則 check</td>
+</tr>
+</tbody></table>
+<h3>你之後想加嘅 feature 嘅 mental model</h3>
+<pre><code>1. 喺 vault 寫 raw data（markdown + frontmatter）
+2. 改 scripts/sync-vault.mjs 加 syncXxx() 食 frontmatter → JSON
+3. 加 src/lib/types.ts 嘅 TypeScript interface
+4. 寫 src/views/XxxView.tsx 跟 5 步 pattern
+5. Wire 入 src/App.tsx (sidebar + conditional render)
+6. npm run sync:vault + npm run dev verify
+7. git commit + push
+</code></pre>
+<p>每加一個 feature 就重複呢 7 步。慣咗就快。</p>
+<hr>
+<p><strong>Good luck. 課程結束之後，你個 personal OS 由今晚開始用 — 唔好放低。</strong></p>
+
+<hr>
+<p style="color: var(--muted); font-size: 0.85rem; text-align: center;">
+DotAI Codex 網課 Level 2 — Student Handbook · 由 STUDENT-HANDBOOK.md 自動生成 · 2026-05-25
+</p>
+</body>
+</html>

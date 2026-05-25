@@ -4,8 +4,22 @@
 
 **課程**：DotAI Codex 網課 Level 2 — 用 Codex 砌自己嘅個人 OS
 **Repo**：[`kennethlaw325/dotai-personal-os`](https://github.com/kennethlaw325/dotai-personal-os)
-**時長**：2 日 × 4 小時 = 8 小時
+**時長**：2 日 × 4 小時 = 8 小時 實體班
 **Prerequisites**：完成過 Level 1（識用 Codex Desktop 基本操作）
+
+---
+
+## 🚀 快速入口
+
+第一次睇？跟住呢個順序：
+
+| 你而家係邊個階段？ | 跳去呢度 |
+|---|---|
+| 開課前一週 | [Pre-class checklist](#課程前一週要做嘅-pre-class-checklist) — 裝環境 + 必讀 |
+| 開課當日 Day 1 | [Day 1 H1](#day-1-h160-min--由-0-setup-workspace--第一次跑起) — 由 0 setup 開始 |
+| 開課當日 Day 2 | [Day 2 H1](#day-2-h160-min--git-workflow--codex-配-git) — Git workflow 起手 |
+| 完課後諗點維護 / deploy | [課後 deploy + 維護](#課後自己-deploy--維護) |
+| 撞 problem / 唔記得個 command | [Reference Cheatsheet](#reference-cheatsheet) 最底 |
 
 ---
 
@@ -33,17 +47,23 @@
 5. 識將自己 OS deploy 上 Vercel + 密碼保護
 6. 個 OS 你今晚就用得返 — 唔係玩完課程就放低
 
-**核心 mental model**：
+**核心 mental model（兩條 path 一齊睇）**：
 
 ```
-[Obsidian vault]
-   ↓ npm run sync:vault
-[public/data/*.json]
-   ↓ Vite dev server
-[localhost:5173 — 你個 dashboard]
+本機開發 path：
+  [Obsidian vault] → npm run sync:vault → [public/data/*.json] → Vite dev → [localhost:5173 dashboard]
+
+部署 path（課後）：
+  [Obsidian vault] → sync → [JSON] → git push → [GitHub private repo] → Vercel build
+                                                                            ↓
+                                              [URL + Edge Middleware 密碼 gate]
+                                                                            ↓
+                                                              [Vercel CDN serve dashboard]
 ```
 
 Vault 係 truth，dashboard 係 render layer。你改 vault → 跑 sync → dashboard update。
+
+部署嘅時候，Vercel 永遠唔接觸你 vault — 學員本機 sync 出嘅 JSON commit 入 repo，Vercel 只 build 已 commit 嘅 JSON。
 
 ---
 
@@ -51,7 +71,7 @@ Vault 係 truth，dashboard 係 render layer。你改 vault → 跑 sync → das
 
 開課當日唔好先發現裝唔到嘢。呢段一週前做齊。
 
-### 要裝嘅 5 樣
+### 要裝嘅 6 樣
 
 #### 1. Node.js 22.x
 
@@ -87,6 +107,22 @@ git --version    # 應該 git version 2.x.x
 
 如果未有，去 https://github.com/signup 註冊。用你常用 email。
 
+#### 6. GitHub CLI (`gh`)
+
+Day 1 / Day 2 全程都用到 `gh` command（fork / clone / PR）。
+
+- Mac：`brew install gh`
+- Windows：`winget install --id GitHub.cli` 或者 https://cli.github.com/ 下載 installer
+- Linux：跟 https://github.com/cli/cli#installation 指示
+
+裝完 + 登入：
+
+```bash
+gh --version       # 應該 gh version 2.x.x 或以上
+gh auth login      # 跟住指示用 browser 登入 GitHub
+gh auth status     # 確認 logged in
+```
+
 ### ⚠️ Windows 學員特別注意（Norton / Symantec SSL）
 
 如果你部 Windows 機裝咗 **Norton Antivirus** 或者 **Symantec Endpoint Protection**（公司機常裝），第一次跑 `npm install` 可能撞 SSL error：
@@ -108,6 +144,37 @@ npm install
 呢個 flag 叫 Node 用 Windows 系統嘅 cert store（入面已裝 Norton root）。
 
 Mac / Linux 學員唔需要呢個 workaround。
+
+### YAML frontmatter 30 秒入門
+
+成個課程嘅 vault file 用 YAML frontmatter（夾喺 `---` 中間）做 metadata。樣板：
+
+```yaml
+---
+id: t-001
+title: 寫 Threads Part 3
+status: doing
+created_at: 2026-05-23T10:00:00+08:00
+tags: [content, deadline]
+rating: null
+---
+
+呢度落本身 markdown body...
+```
+
+記住 4 個基本規則：
+
+1. `key: value` 一行一個，**冒號後面要有空格**
+2. 字符串可以唔加引號（除非有 `:` / `#` 等特殊字符）
+3. List 兩種寫法：inline `[a, b, c]` 或 block：
+   ```yaml
+   tags:
+     - content
+     - deadline
+   ```
+4. Null / 未填：寫 `null` 或者 留空（`rating: `）
+
+frontmatter 一旦 syntax 錯，`sync:vault` 會 fail 嗰個 file。撞到 error 先 check 冒號後有冇空格 + List 有冇 indent 對齊。
 
 ### Git mental model（30 秒記住呢張圖）
 
@@ -138,11 +205,12 @@ Mac / Linux 學員唔需要呢個 workaround。
 - [ ] `node --version` 出 v22.x
 - [ ] `npm --version` 出 10.x+
 - [ ] `git --version` 出 git version 2.x
+- [ ] `gh --version` 出 gh version 2.x+ 同 `gh auth status` 已 logged in
 - [ ] Codex Desktop 開到，已 login，見到 chat + terminal + file panel
 - [ ] Obsidian 開到，有起碼一個 vault
 - [ ] github.com login 入到自己 dashboard
 - [ ] （Windows + Norton 用戶）已記住 `NODE_OPTIONS=--use-system-ca` workaround
-- [ ] 已睇過 Git mental model + Codex Desktop 5 動作
+- [ ] 睇過 YAML 30 秒入門 + Git mental model + Codex Desktop 5 動作
 
 撞 problem 開課前 3 日內 message 老師。
 
@@ -179,22 +247,40 @@ git --version
 #### Step 1 — Codex Desktop setup workspace（10 min）
 
 1. **打開 Codex Desktop**
-2. **揀位放 project folder**：
-   - Windows：`C:\Users\<你>\Desktop\dotai-personal-os`
-   - Mac：`/Users/<你>/Desktop/dotai-personal-os`
-   - Linux：`/home/<你>/dotai-personal-os`
-3. **喺 Codex Desktop 內開 file panel**（會見到揀咗嘅 folder 入面 file）
-4. **喺 Codex Desktop 內開 terminal**（內建嘅）
-5. **set `@cwd` 比 Codex 識個 working directory**
+2. **揀放 project 嘅 parent folder**（即係之後 `dotai-personal-os` 個 sub-folder 嘅上一層）：
+   - Windows：`C:\Users\<你>\Desktop\`
+   - Mac：`/Users/<你>/Desktop/`
+   - Linux：`/home/<你>/`
 
-#### Step 2 — Clone skeleton repo（5 min）
+   Step 2 `gh repo fork --clone` 會自動喺呢個 parent 入面 create `dotai-personal-os/` sub-folder。
+
+3. **喺 Codex Desktop 內開 file panel**指住 parent folder
+4. **喺 Codex Desktop 內開 terminal**（內建嘅），cd 入 parent
+5. **set `@cwd` 比 Codex 識個 working directory**（之後 Step 2 fork 完再改 `@cwd` 入 sub-folder）
+
+#### Step 2 — Fork + clone skeleton repo（5 min）
 
 ```bash
-gh repo clone kennethlaw325/dotai-personal-os .
-# 或者：git clone https://github.com/kennethlaw325/dotai-personal-os.git .
+gh repo fork kennethlaw325/dotai-personal-os --clone
 ```
 
-`.` 嘅意思 = clone 落而家 cwd 呢個 folder，唔開新 sub-folder。
+呢個 command 做 3 件事：
+1. Fork 老師個 repo 入你 GitHub account
+2. Clone 你個 fork 落本機
+3. 自動 set 2 個 remote：`origin` = 你個 fork、`upstream` = 老師個 repo
+
+`upstream` Day 2 H1 會用到（拎老師課堂中 push 嘅 fix）。
+
+確認 remote 設好：
+
+```bash
+cd dotai-personal-os
+git remote -v
+# origin     https://github.com/<你>/dotai-personal-os.git (fetch)
+# origin     https://github.com/<你>/dotai-personal-os.git (push)
+# upstream   https://github.com/kennethlaw325/dotai-personal-os.git (fetch)
+# upstream   https://github.com/kennethlaw325/dotai-personal-os.git (push)
+```
 
 #### Step 3 — npm install（10 min）
 
@@ -388,6 +474,27 @@ Tiago 嘅 CODE framework: Capture / Organize / Distill / Express。
 
 **重點**：Frontmatter 入面嘅 field 係你**自己 design**。
 
+#### 補充：vault folder 命名彈性
+
+樣板 vault 用 `40 - Daily/` / `30 - Notes/` / `00 - Inbox/` 呢類 Johnny Decimal / PARA 風格命名，但**你自己 vault 用乜名都得**。
+
+例如你 vault 用：
+- `Daily/` 取代 `40 - Daily/`
+- `Atomic Notes/` 取代 `30 - Notes/`
+- `Brain Dump/` 取代 `00 - Inbox/`
+
+只需要喺 `scripts/sync-vault.mjs` 對應改返 folder path 就 work：
+
+```javascript
+// 樣板：
+const files = await fg("40 - Daily/*.md", { cwd: VAULT_DIR, absolute: true });
+
+// 你 vault 用其他名：
+const files = await fg("Daily/*.md", { cwd: VAULT_DIR, absolute: true });
+```
+
+`fast-glob` 嘅 pattern 食任何 folder 名，唔限定。
+
 #### Step 2 — 改 sync-vault.mjs 加新 entity（15 min）
 
 Codex Desktop chat：
@@ -562,9 +669,9 @@ Paste Codex output → save → 睇 Codex Desktop output window 有冇紅線。
 #### Step 4 — Wire 入 App.tsx（10 min）
 
 ```
-@cwd dotai-personal-os/src/App.tsx
+@cwd dotai-personal-os
 
-加多一個 view『<name>』入 sidebar：
+加多一個 view『<name>』入 sidebar（改 src/App.tsx）：
 - 加 import 對應 component
 - 加適合嘅 lucide-react icon
 - View type union 加新 view name
@@ -723,6 +830,14 @@ daily-*.md  →  word freq    →  "本周 top topic: 'Codex 網課'"
 
 #### Step 2 — 純 JS stats（15 min）
 
+先喺 `package.json` `scripts` 加一條：
+
+```json
+"insights": "node scripts/insights.mjs"
+```
+
+之後就可以跑 `npm run insights` 而唔需要 `node scripts/insights.mjs`，pattern 同 `npm run sync:vault` 對齊。
+
 `scripts/insights.mjs`：
 
 ```javascript
@@ -768,7 +883,7 @@ async function main() {
 main();
 ```
 
-跑 `node scripts/insights.mjs` → 見 output。
+跑 `npm run insights` → 見 output。
 
 #### Step 3 — LLM-augmented narrative summary（20 min）
 
@@ -811,7 +926,7 @@ export default function InsightsView() {
     fetchJson<Insights | null>("/data/insights.json", null).then(setData);
   }, []);
 
-  if (!data) return <div>跑 `node scripts/insights.mjs` 先 generate insights。</div>;
+  if (!data) return <div>跑 `npm run insights` 先 generate insights。</div>;
 
   return (
     <div>
@@ -829,6 +944,23 @@ export default function InsightsView() {
   );
 }
 ```
+
+#### Step 5 — Wire 入 App.tsx（5 min）
+
+```
+@cwd dotai-personal-os
+
+src/App.tsx 加多一個 view 「insights」入 sidebar：
+- 加 import { Sparkles } from 'lucide-react'
+- 加 import InsightsView from './views/InsightsView'
+- View type union 加 'insights'
+- NAV array 加 entry { id: "insights", label: "Insights", icon: Sparkles }
+- 條件 render 加
+
+只 diff 改動，唔 rewrite 成個 file。
+```
+
+跑 `npm run insights` → `npm run dev` → 切去 Insights view 應該見到 today's brief。
 
 #### 教學重點
 
@@ -1203,9 +1335,9 @@ A：跟 Vercel error message 提示安裝對應 package（最常見 `@vercel/edg
 
 **4. Wire 入 App.tsx**：
 ```
-@cwd dotai-personal-os/src/App.tsx
+@cwd dotai-personal-os
 
-加多一個 view『<name>』入 sidebar：
+加多一個 view『<name>』入 sidebar（改 src/App.tsx）：
 - 加 import 對應 component
 - 加適合嘅 lucide-react icon
 - View type union 加新 view name
@@ -1230,11 +1362,28 @@ git fetch upstream && git merge upstream/main       # pull upstream
 
 ### 撞 problem 點搵答案
 
+5 條 fallback：
+
 1. **先 `git status`** — 50% 嘅 Git 問題答案喺度
 2. **睇 terminal 嘅 full output**（唔好淨係睇最後一行）
 3. **Codex prompt template「解 error」**（上面有）
 4. **Google 完整 error message**（多數 Stack Overflow 有答案）
 5. **問 TA / 同學**
+
+### Common Errors 速查表
+
+| 症狀 | 大機會 root cause | Quick fix |
+|------|-------------------|-----------|
+| `npm install` 出 `UNABLE_TO_VERIFY_LEAF_SIGNATURE` + `Exit handler never called` | Norton / Symantec SSL MITM | `NODE_OPTIONS=--use-system-ca npm install` |
+| `npm install` 出 `EACCES permission denied` | npm cache 無權限 | Mac/Linux：`sudo chown -R $(whoami) ~/.npm`；Windows：以管理員身份打開 Codex Desktop |
+| `npm run dev` 報 `Port 5173 is in use` | 另一個 Vite 跑緊 | 任由 Vite 自動跳 port，留意 terminal print 嘅實際 URL；或者 `lsof -i :5173` 找出 + kill |
+| `npm run sync:vault` 出空 array | VAULT_DIR 唔啱 / folder pattern 唔 match | echo `$env:VAULT_DIR`（Windows）或 `echo $VAULT_DIR`（Mac/Linux）確認；ls VAULT_DIR 入面 folder 名同 sync 入面 `fg("...")` pattern 對應 |
+| Codex Desktop 紅線「Property 'X' is possibly 'null'」 | TypeScript strict 揭咗 nullable mismatch | Codex prompt：「呢個 error 解釋 root cause + 2 個 minimal fix」 |
+| Browser 開 localhost 白屏 | Fetch fail / JSON shape 唔啱 | F12 開 Console 睇 error；check `public/data/<file>.json` 是否 valid JSON |
+| `git push` 出 `Updates were rejected because the remote contains work` | 遠端有你冇嘅 commit | `git pull --rebase` 拎遠端 commit 後再 push；唔好 `--force` |
+| `gh pr create` 出 `not a git repository` | cwd 唔係 git repo | `cd` 入啱嘅 folder；或者 `git remote -v` 確認 origin 設好 |
+| Vercel deploy 出 middleware error | Edge Middleware syntax 同 Vite 唔 compat | 跟 Vercel error 提示 `npm install @vercel/edge` + 改 import |
+| frontmatter `sync:vault` skip 個 file | YAML syntax error（冒號後無空格 / 字符串包含特殊字符無加引號） | 開個 file 對住 [YAML primer](#yaml-frontmatter-30-秒入門) 4 條規則 check |
 
 ### 你之後想加嘅 feature 嘅 mental model
 
