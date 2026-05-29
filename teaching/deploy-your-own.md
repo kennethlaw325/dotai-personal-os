@@ -118,13 +118,27 @@ Vercel 應該 auto-detect Vite，框框已填好：
 
 ---
 
+## Step 4.5 — 🚨 關咗 Vercel Authentication（必做，5 秒）
+
+**唔做呢步，後面個 Basic Auth middleware 永遠都唔會 trigger。** Vercel 2025 起新 project 預設開「Vercel Authentication: Standard Protection」— 即係即使你部署到 production，都要透過 Vercel OAuth 先入到 site。呢個內建層喺 middleware **之前** intercept，所以你寫嘅 Basic Auth 唔會 fire。
+
+1. 開 `https://vercel.com/<你 username>/dotai-personal-os/settings/deployment-protection`（或 dashboard → project → Settings → Deployment Protection）
+2. **「Vercel Authentication」** section：「Require Log In」toggle **OFF**（藍變灰）
+3. 撳「Save」
+
+⚠️ **唔好掂下面個「Password Protection」** — 嗰個係 Vercel Pro plan $150/月 嘅 feature。我哋自己寫嘅 middleware Basic Auth 已 cover 同樣功能 + 仲多埋 security header。
+
+驗證已關咗：之後 deploy 完，唔輸入 password curl 個 URL → 應該見到 `WWW-Authenticate: Basic realm="Personal OS"`（我嘅 middleware 出嘅），唔係 `Set-Cookie: _vercel_sso_nonce=...`（Vercel SSO 出嘅）。
+
+---
+
 ## Step 5 — 加密碼保護（Edge Middleware）
 
 呢步係**整個 deploy 嘅核心安全層**。Vercel Edge Middleware 喺 build 完之後喺 CDN 邊緣攔截每一個 request，無啱嘅密碼就返 401。
 
 ### 5.1 — 喺 project root 加 `middleware.ts`
 
-⚠️ **呢段 syntax 仍要 verify**：Vercel Edge Middleware 對非 Next.js project 嘅支援我未實測，可能要用 `@vercel/edge` package 代替 `next/server`。第一次 deploy 撞 error 嘅話跟 Vercel error message 提示安裝對應 package。
+✅ **Syntax 已 production verified**（2026-05-29 Phase 7 live deploy）：`@vercel/edge` 嘅 `next({ headers })` helper 喺 Vite SPA non-Next.js project work，pass-through path 嘅 SECURITY_HEADERS 真係 propagate 落下游。第一次 deploy 撞 import error 嘅話 `npm install @vercel/edge --save`。
 
 ```typescript
 // middleware.ts at project root
@@ -323,6 +337,20 @@ A：第一次 deploy 撞 error 跟 Vercel error message 提示 install 對應 pa
 
 **Q：可以唔可以唔加 Basic Auth？**
 A：唔可以。SPEC 講明真實 vault data → 一定要密碼 gate。冇 gate = 任何撞到 URL 嘅人都見到你個 vault。
+
+**Q：用 PowerShell 跑 `vercel env add` 攞 password 變咗亂碼點算？**
+A：⚠️ **PowerShell `Write-Output $pw | vercel env add ...` 會 silent 加 UTF-16 BOM + CRLF 落 password value**，Vercel store 後 middleware 比對失敗，唔輸入 password 都 401（其實 stored password 係 `<BOM>p0B4...\r\n` 唔係 `p0B4...`）。
+
+✅ **修法**：
+1. 用 **Bash / Git Bash** 跑：
+   ```bash
+   printf '%s' 'your-password' | vercel env add SITE_PASSWORD production
+   ```
+2. 或 PowerShell 用 `[Console]::Out.WriteLineAsync` / `Out-File -Encoding ASCII -NoNewline` 寫去 tempfile 再 redirect
+3. **建議方法**：直接喺 Vercel dashboard Settings → Environment Variables UI 入 password，零 encoding 陷阱
+
+**Q：Preview environment 點解 `vercel env add` 加唔到？**
+A：CLI 攞 Preview environment 需要互動確認「apply to all preview branches」，session 非 interactive 時就 reject。解決：用 Vercel dashboard 加（30 秒），或者用 Vercel REST API `POST /v10/projects/<id>/env`。
 
 ---
 
