@@ -109,6 +109,34 @@ $env:NODE_OPTIONS="--use-system-ca"; npm install
 
 ---
 
+## 🔒 資安準備（30 秒，必做）
+
+Day 2 H4 會跑 5 條 P0 資安紅線 mini-section。開課前先做 3 樣，省返堂上時間：
+
+### 1. Password manager 生個 16+ 字 password
+
+- 用 Bitwarden / 1Password / Apple Passwords / Windows Credential Manager 生 16+ 字 random password（字母 + 數字 + 符號）
+- 將佢標籤做「dotai-personal-os SITE_PASSWORD」備用
+- 唔好用你 GitHub / email / 銀行嘅同一個 password
+- Day 2 deploy 教學會用呢個 password
+
+### 2. GitHub 開 Secret Scanning + Dependabot
+
+開課當日 fork 完 repo 之後：
+- Repo → Settings → Code security and analysis
+- ✅ Secret scanning（push protection enabled）
+- ✅ Dependabot alerts + security updates
+
+呢個係後台被動 protection — 万一你漏 commit 個 secret，push 即時 reject。
+
+### 3. Codex Desktop 確認預設 sandbox mode
+
+- 開 Codex Desktop → Settings → Sandbox / Execution
+- 確認 default mode = `workspace-write`（唔係 `danger-full-access`）
+- 全程課程都唔需要 `danger-full-access`；老師如果叫你改，先停一停問點解
+
+---
+
 ## ✅ 完成 checklist
 
 開課前一日 self-verify：
@@ -121,6 +149,8 @@ $env:NODE_OPTIONS="--use-system-ca"; npm install
 - [ ] github.com login 入到自己 dashboard
 - [ ] （Windows + Norton 用戶）已記住 `NODE_OPTIONS=--use-system-ca` workaround
 - [ ] 已睇過 Git mental model 同 Codex Desktop 5 動作
+- [ ] Password manager 入面已生 16+ 字「dotai-personal-os SITE_PASSWORD」
+- [ ] Codex Desktop default sandbox mode 確認 `workspace-write`
 
 ---
 

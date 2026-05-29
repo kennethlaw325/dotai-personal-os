@@ -130,18 +130,43 @@ Vercel 應該 auto-detect Vite，框框已填好：
 // middleware.ts at project root
 
 export const config = {
+  // 紅線 #4 fix: 明確包 /data/* /api/* 防止 JSON 被 bypass
   matcher: ['/((?!_static|favicon|robots\\.txt).*)']
 };
 
+const SECURITY_HEADERS = {
+  // 紅線 #5 cross-cut: 收緊 render-time exfil 通道
+  'Content-Security-Policy':
+    "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; frame-ancestors 'none'",
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'no-referrer',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+};
+
 export default function middleware(request: Request) {
+  const password = process.env.SITE_PASSWORD;
+
+  // 紅線 #2 fix: env var 漏設 → fail closed，唔係 fail open
+  if (!password) {
+    return new Response('Server misconfigured: SITE_PASSWORD not set', { status: 500 });
+  }
+
+  // 紅線 #4 fix: production + preview 都 enforce; 其他 env 直接拒
+  const env = process.env.VERCEL_ENV;
+  if (env !== 'production' && env !== 'preview') {
+    return new Response('Forbidden', { status: 403 });
+  }
+
   const auth = request.headers.get('authorization');
 
   if (auth) {
-    const encoded = auth.split(' ')[1];
-    const decoded = atob(encoded);
-    const [, password] = decoded.split(':');
-    if (password === process.env.SITE_PASSWORD) {
-      // 密碼啱，繼續 serve 原本內容
+    const encoded = auth.split(' ')[1] ?? '';
+    let decoded = '';
+    try { decoded = atob(encoded); } catch { /* invalid base64 */ }
+    const [, supplied] = decoded.split(':');
+    if (supplied && supplied === password) {
+      // 密碼啱 — pass through，加 response header（response 由下游 page 出，header set 喺 next layer）
       return; // undefined = pass through
     }
   }
@@ -151,11 +176,19 @@ export default function middleware(request: Request) {
     status: 401,
     headers: {
       'WWW-Authenticate': 'Basic realm="Personal OS"',
-      'Content-Type': 'text/plain'
+      'Content-Type': 'text/plain',
+      ...SECURITY_HEADERS,
     }
   });
 }
 ```
+
+**呢個版本 vs 原版本嘅 4 條 hardening**（對應 §security.md 紅線）：
+1. `SITE_PASSWORD` 漏設 → 500 fail-closed（紅線 #2）
+2. `VERCEL_ENV` 唔係 production / preview → 403 拒絕（紅線 #4）
+3. 401 response 套 CSP / X-Frame-Options / HSTS / Referrer-Policy / nosniff（紅線 #5 cross-cut）
+4. `atob` 包 try/catch，invalid base64 唔會 throw 漏 stack trace
+
 
 ### 5.2 — 喺 Vercel 設 `SITE_PASSWORD` env var
 

@@ -1,12 +1,20 @@
-# Day 2 H4 — Polish + 展示 + Q&A + 未來方向 teaser (60 min)
+# Day 2 H4 — Polish + 資安 + 展示 + Q&A + 未來方向 teaser (60 min)
 
 ## 目標
 
-學員 polish 自己 OS、demo 比同學睇、Q&A、teaser Level 3。
+學員 polish 自己 OS、跑 5 條 P0 資安紅線 + checklist、demo 比同學睇、Q&A、teaser Level 3。
 
 ## 流程
 
-### Step 1 — Polish (20 min)
+### Step 0 — 資安 mini-section (15-20 min) 🆕
+
+跑 `teaching/security.md` mini-section。重點 5 條 P0 紅線 + 5 步 deploy-time checklist + 2 條 demo（建議 prompt injection + audit script，或 preview URL bypass）。學員 ship 之前必跑 `npm run security:audit`。
+
+對應 student 材料：`STUDENT-HANDBOOK.md` 「資安」一節。
+
+**Time 緊張嘅 fallback**：剩 10 min → cut 落 1 條 demo（推薦 `npm run security:audit` live 跑） + 5 步 checklist 重點講。詳細時間分配見 `security.md` §8。
+
+### Step 1 — Polish (15 min，由 20 min 縮)
 
 每學員 self-polish：
 - npm run build verify production bundle 跑得起
@@ -23,7 +31,7 @@ Codex prompt 範例：
 3. Trade-off 寫返一段。
 ```
 
-### Step 2 — Demo carousel (25 min)
+### Step 2 — Demo carousel (20 min，由 25 min 縮)
 
 每學員 5 min demo：
 - 開 own localhost:4173
@@ -67,7 +75,7 @@ Codex prompt 範例：
 - 自動化：之後改 vault → `npm run sync:vault` → commit → push → Vercel 自動 rebuild
 - Cost：Hobby plan 免費 quota 學員用唔晒
 
-### Step 4 — Level 3 teaser (5 min)
+### Step 4 — Level 3 teaser (5 min，唔變)
 
 老師 5 min slide：
 
@@ -89,7 +97,9 @@ Codex prompt 範例：
 
 ## 完成標準
 
+- [ ] 學員可講返 5 條 P0 資安紅線 + 識跑 `npm run security:audit`
+- [ ] 學員 ship 之前識行 5 步 deploy-time checklist
 - [ ] 每學員 demo 自己 OS（5 min）
 - [ ] 學員 Q&A 至少 1 條
 - [ ] 學員拎走 Level 3 teaser
-- [ ] 教學素材 share：repo URL / SYLLABUS / teaching folder
+- [ ] 教學素材 share：repo URL / SYLLABUS / teaching folder（包 `security.md`）
