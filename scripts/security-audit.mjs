@@ -17,7 +17,9 @@ import path from 'node:path';
 
 const ROOT = process.cwd();
 const args = process.argv.slice(2);
-const SCAN_PATHS = args.length > 0 ? args : ['public/data', 'sample-vault'];
+// Default scan: shipped JSON + sample vault + 學員自己 vault (Q8.4)
+// walk() ENOENT-safe — 學員未 import 自己 vault 唔會 break
+const SCAN_PATHS = args.length > 0 ? args : ['public/data', 'sample-vault', 'vault'];
 
 const ALLOWED_OUTBOUND_HOSTS = new Set([
   // 加入學員信嘅 CDN domain（e.g. own vault assets, school-issued URLs）

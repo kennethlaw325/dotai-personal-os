@@ -1114,6 +1114,7 @@ npm run sync:vault
 **你要做**：
 - Web-clipped article **絕對唔好**直接 sync 入 dashboard JSON。Clipped 留 `vault/raw/`，唔入 allow-list。
 - Codex 寫嘅 note manual review 先 sync — 唔好 auto-sync hook。
+- 跟 `teaching/prompts/security-prompts.md` 兩條 path：(a) prompt-embedded preamble 每次 paste，或 (b) repo root 加 `AGENTS.md` Codex Desktop auto-load。
 
 #### 紅線 #4 — Vercel Preview URL bypass
 

@@ -128,6 +128,11 @@ Vercel 應該 auto-detect Vite，框框已填好：
 
 ```typescript
 // middleware.ts at project root
+//
+// ⚠️ Vite SPA 版 pass-through syntax 未喺 production Vercel verify 過，
+// 第一次 deploy 撞 error 跟 Vercel 提示 install `@vercel/edge` 即可。
+
+import { next } from '@vercel/edge';
 
 export const config = {
   // 紅線 #4 fix: 明確包 /data/* /api/* 防止 JSON 被 bypass
@@ -166,8 +171,11 @@ export default function middleware(request: Request) {
     try { decoded = atob(encoded); } catch { /* invalid base64 */ }
     const [, supplied] = decoded.split(':');
     if (supplied && supplied === password) {
-      // 密碼啱 — pass through，加 response header（response 由下游 page 出，header set 喺 next layer）
-      return; // undefined = pass through
+      // 紅線 #5 fix: pass-through path 都套 SECURITY_HEADERS
+      // `next()` 傳 headers option 會 propagate 落 downstream response
+      return next({
+        headers: SECURITY_HEADERS,
+      });
     }
   }
 
@@ -183,11 +191,12 @@ export default function middleware(request: Request) {
 }
 ```
 
-**呢個版本 vs 原版本嘅 4 條 hardening**（對應 §security.md 紅線）：
+**呢個版本 vs 原版本嘅 5 條 hardening**（對應 §security.md 紅線）：
 1. `SITE_PASSWORD` 漏設 → 500 fail-closed（紅線 #2）
 2. `VERCEL_ENV` 唔係 production / preview → 403 拒絕（紅線 #4）
 3. 401 response 套 CSP / X-Frame-Options / HSTS / Referrer-Policy / nosniff（紅線 #5 cross-cut）
 4. `atob` 包 try/catch，invalid base64 唔會 throw 漏 stack trace
+5. Pass-through path 都 propagate `SECURITY_HEADERS` 落下游 response（用 `@vercel/edge` `next()` helper）— Vite SPA 版未 Phase 7 verify，如撞 syntax error 跟 Vercel 提示 fallback 直接 `return undefined`
 
 
 ### 5.2 — 喺 Vercel 設 `SITE_PASSWORD` env var
