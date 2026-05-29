@@ -246,8 +246,46 @@ ul { margin: 0.6rem 0; }
 <li>原計劃輸出 PDF / HTML / SCORM 等 multi-format，最終淨係 markdown — 學員 fork repo 用 VS Code / Codex Desktop / Obsidian 任何 markdown reader 都睇得到。Multi-format conversion 屬 post-ship task。</li>
 </ul>
 
-<h2>Phase 7：Vercel Deploy（PENDING Kenneth manual step）</h2>
-<p class="status-open">⏳ Pending — 需要 Kenneth 登入 Vercel 親自完成 import + env var + deploy</p>
+<h2>Phase 7：Vercel Deploy（SHIPPED 2026-05-29 17:50 HKT）</h2>
+<p class="status-shipped">✅ Shipped — production URL live + Basic Auth gate verified + SECURITY_HEADERS confirmed pass-through</p>
+<p><strong>Production URL</strong>：<code>https://dotai-personal-83baejcb5-kennethlaw325s-projects.vercel.app</code></p>
+<p><strong>Project</strong>：<code>kennethlaw325s-projects/dotai-personal-os</code>（id <code>prj_K7RXnfJX1DuWYr3wxq706SzXeOn3</code>）</p>
+
+<h4>實際做咗嘅嘢</h4>
+<ol>
+<li>Materialize <code>middleware.ts</code> 落 repo root（commit <code>d79a3e0</code>），add <code>@vercel/edge ^1.3.1</code> dep。typecheck pass。</li>
+<li>Vercel CLI login state <code>kennethlaw325</code> 已認證；<code>vercel link --yes --project dotai-personal-os</code> 創 project（GitHub auto-connect 失敗但 link OK）。</li>
+<li>Generate 20-char random password 經 PowerShell <code>RandomNumberGenerator.GetBytes</code> → base64 → 替換 special char → substring。Password 送 Discord 比 Kenneth 入 password manager。</li>
+<li>Set <code>SITE_PASSWORD</code> 入 Vercel env (production + development)。Preview 仍 pending Kenneth dashboard manual add（CLI 非 interactive 唔接受 preview branch confirm）。</li>
+<li><code>vercel deploy --prod --yes</code> deploy 出 <code>dpl_9TmXvxSPuFjhvFdckf5nbYiBFtJq</code>，跟住一條 redeploy <code>dpl_...83baejcb5</code> 因 env var 第一次入錯 BOM。</li>
+<li>撞 Vercel 內建 Deployment Protection（SSO）blocker — Kenneth dashboard toggle off「Vercel Authentication」之後我嘅 middleware 開始 receive 請求。</li>
+<li>5 curl verify：401 (no auth) / 200 (correct auth) / 401 (JSON no auth) / 200 (JSON correct auth) / 5 SECURITY_HEADERS 喺 401 同 200 都 confirm pass-through。</li>
+</ol>
+
+<h4>實作 vs spec 差異 / 偏離</h4>
+<ul>
+<li><strong>Password 第一次入錯 BOM / CRLF</strong>：PowerShell <code>Write-Output $pw | vercel env add</code> 將 UTF-16LE BOM + <code>\r\n</code> 送入 stdin。Vercel 將完整 byte stream 存做 env value → middleware 比對失敗。Workaround：用 Bash <code>printf '%s' "$PW" | vercel env add</code>，POSIX 唔加 BOM 唔加 newline。教訓記入 deploy-your-own.md FAQ 應該補返。<strong>Side incident</strong>：debug 過程中我 `vercel env pull .env.test` 將真 password + VERCEL_OIDC_TOKEN 落咗 local file。即刻 <code>rm -f .env.test</code> 刪走（file 從未 commit），但係 OIDC token 已被讀取喺呢個 session 內存 trace 入面 — token 有效期 12 hr，建議 Kenneth 等 token expire 過後再做敏感操作，或 rotate via <code>vercel logout && vercel login</code>。</li>
+<li><strong>Vercel SSO 撞牆</strong>：spec 完全冇預期 Vercel 2025+ 新 project default 開「Vercel Authentication: Standard Protection」— 即係 production deploy URL 都唔公開，要 OAuth via Vercel account。原 spec 假設 middleware 直接 first hop intercept 請求，實際 SSO 喺 middleware 之前 intercept。<strong>Mitigation</strong>：deploy-your-own.md Step 5 之前要加新 Step 4.5「Disable Vercel Authentication」步驟，否則學員部署後 Basic Auth gate 永遠唔生效，會誤以為自己 setup 啱晒。Phase 8.6 待做。</li>
+<li><strong>Preview env CLI 攔截</strong>：<code>vercel env add SITE_PASSWORD preview</code> 喺 non-interactive session 出 <code>hint: Run one of the commands in next[] to complete without prompting</code> reject。要 Kenneth dashboard 手動加，或者用 Vercel REST API。學員教材冇 cover — Phase 8.6 待加 dashboard step。</li>
+<li><strong>第二次 deploy URL 同第一次唔同</strong>：每次 <code>vercel --prod</code> 都 mint 新 deployment URL（<code>-83baejcb5</code> vs <code>-ormcn3kjq</code>），舊 deployment 唔自動刪，仍可 access。Phase 8.6 應該 <code>vercel rm</code> 第一次嗰條（password 錯嘅 deployment）reduce attack surface。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<ul>
+<li><strong>用 <code>@vercel/edge</code> 而唔係 raw <code>Response</code> pass-through</strong>：Q8.5.2 spec 已答 — 揀 <code>@vercel/edge</code> 因為佢係 Vercel 官方 helper，pass-through header propagation 行為 documented。<strong>Live verify：work</strong>。Vite SPA non-Next.js project 可以用 <code>next({ headers })</code>。Q8.5.2 ✅ resolved。</li>
+<li><strong>Production-only deploy 而唔等 Preview env 補齊</strong>：production 已 cover 主要 sharing scenario（同 Jimmy / 學員 demo）；preview deploy 學員自己 branch push 之後 fail-closed 返 500（SITE_PASSWORD missing），唔 leak vault data，安全 default。Kenneth 之後 30 秒 dashboard 加 preview env 解鎖。</li>
+<li><strong>不 rotate password</strong>：password 已喺 Discord 送過。Production 用緊嘅就係呢條，未公開未 leak 出 channel 外。如 Kenneth 想 rotate，<code>vercel env rm</code> + 重 add + redeploy。</li>
+</ul>
+
+<h4>新 open question（Phase 7 自身）</h4>
+<ul>
+<li><strong>Q7.1</strong>：要唔要 promote 呢條 URL 上 stable alias（e.g. <code>dotai-personal-os.vercel.app</code>，無 hash）？學員分享 URL 而家係 unguessable hash 形式，rotate deploy 會出新 URL。Stable alias 易記但 attacker 估到。建議：教 alias 概念但唔 push 上 production（學員自己揀）。</li>
+<li><strong>Q7.2</strong>：舊 deployment <code>dpl_9TmXvxSPuFjhvFdckf5nbYiBFtJq</code>（password 錯嘅 deploy）要唔要 <code>vercel rm</code>？建議：要，紅線 #4 incident playbook 嘅標準 hygiene。</li>
+<li><strong>Q7.3</strong>：Phase 8.6 應該包乜？目前列 (a) deploy-your-own.md 加「disable Vercel Authentication」Step 4.5，(b) 加「PowerShell BOM 陷阱」FAQ，(c) <code>vercel rm</code> 老 deployment hygiene。要唔要再做？</li>
+</ul>
+
+<h2>Phase 7 原 placeholder（已 obsolete）</h2>
+<p class="status-open" style="opacity: 0.5"><del>⏳ Pending — 需要 Kenneth 登入 Vercel 親自完成 import + env var + deploy</del></p>
 
 <h4>準備好嘅嘢</h4>
 <ul>
@@ -369,7 +407,7 @@ ul { margin: 0.6rem 0; }
 
 <h4>開放式問題（Phase 8.5 自身）</h4>
 <ul>
-<li><strong>Q8.5.2</strong>：<code>@vercel/edge</code> import 喺 Vite SPA non-Next.js project 真係 runtime work 唔 work，blocked by Phase 7 Vercel 親自 deploy verify。如撞 error → fallback 喺 deploy-your-own.md 已寫，學員可 swap 返 <code>return undefined</code> bare pass-through（犧牲紅線 #5 嘅 pass-through header layer，但 401 path 仍有 SECURITY_HEADERS）。</li>
+<li><strong>Q8.5.2 ✅ Resolved 2026-05-29 (Phase 7 live verify)</strong>：<code>@vercel/edge</code> <code>next({ headers })</code> 喺 Vite SPA non-Next.js project work — production curl confirm 200 response 帶埋 5 條 SECURITY_HEADERS (CSP / HSTS / X-Frame-Options / X-Content-Type-Options / Referrer-Policy) propagate 落下游。Fallback path 唔需要用。</li>
 <li><strong>Q8.5.3</strong>：`AGENTS.md` 喺 repo root vs `dotai-personal-os/AGENTS.md` 嘅 Codex Desktop auto-load behavior，我寫 `repo root` 預設，但 Codex Desktop 實際讀邊個 path 我冇 verify。要唔要 pre-class checklist 加一步「學員第一日問 Codex Desktop where do you load AGENTS.md from?」？</li>
 <li><strong>Q8.5.4</strong>：security-prompts.md Pattern 3「高危 task explicit guard」我寫 example 用 `vault/raw/clipped-article.md`，但唔係 sample-vault file。要唔要 sample-vault 加一條 fake clipped article 配合 Day 2 §3.1 demo + Pattern 3 reference？</li>
 </ul>
@@ -397,7 +435,7 @@ ul { margin: 0.6rem 0; }
 </ul>
 
 <p style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e6edf5; color: #66758a; font-size: 0.85rem;">
-Generated 2026-05-25 HKT. <strong>Updated 2026-05-29 18:00 HKT</strong> — Phase 8.5 shipped (Q8.1-Q8.5 implemented per Kenneth「全部實作 SPEC 中的規定」). Phase 1-6 + 8 + 8.5 shipped, Phase 7 (Vercel deploy) pending Kenneth manual step. 11/11 original + 5/5 Q8.x resolved + 3 new Q8.5.2-Q8.5.4 open (Phase 8.5 self-arising). 61 file in repo + STUDENT-HANDBOOK.md (1526 行) + implementation-notes.html + security.md + security-prompts.md (新)。
+Generated 2026-05-25 HKT. <strong>Updated 2026-05-29 17:55 HKT</strong> — Phase 7 SHIPPED (production URL <code>dotai-personal-83baejcb5-kennethlaw325s-projects.vercel.app</code> live, Basic Auth gate + SECURITY_HEADERS verified). Q8.5.2 ✅ resolved live. Phase 1-8.5 + 7 shipped. 3 new Q7.1-7.3 open (stable alias / old deployment hygiene / Phase 8.6 scope). 62 file in repo + middleware.ts (新)。
 </p>
 
 </body>
