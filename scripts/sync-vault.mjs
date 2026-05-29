@@ -26,6 +26,18 @@ const ROOT = join(__dirname, "..");
 const VAULT_DIR = process.env.VAULT_DIR || join(ROOT, "sample-vault");
 const OUT_DIR = join(ROOT, "public", "data");
 
+// Defensive guard: forbid syncing Kenneth's real Obsidian vault into public/data/.
+// Rule source: ~/.claude/memory/feedback_dotai_no_real_vault_sync.md (2026-05-29).
+// 學員 fork 自己 vault 唔受影響（path 唔含呢個 keyword）。
+// 如 vault path 日後移動，喺 sync command 加 ALLOW_REAL_VAULT=1 環境變數 override。
+const FORBIDDEN_VAULT_PATTERNS = [/Desktop[\\/]Obsidian/i];
+if (!process.env.ALLOW_REAL_VAULT && FORBIDDEN_VAULT_PATTERNS.some((p) => p.test(VAULT_DIR))) {
+  console.error(`❌ Refusing to sync real Obsidian vault: ${VAULT_DIR}`);
+  console.error(`   Production deploy only allows sample-vault/.`);
+  console.error(`   Override (本機 dev only, 唔好 commit public/data/) with ALLOW_REAL_VAULT=1.`);
+  process.exit(1);
+}
+
 const toPosix = (p) => p.split("\\").join("/");
 
 async function ensureDir(path) {
