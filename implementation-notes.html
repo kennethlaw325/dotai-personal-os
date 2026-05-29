@@ -279,9 +279,30 @@ ul { margin: 0.6rem 0; }
 
 <h4>新 open question（Phase 7 自身）</h4>
 <ul>
-<li><strong>Q7.1</strong>：要唔要 promote 呢條 URL 上 stable alias（e.g. <code>dotai-personal-os.vercel.app</code>，無 hash）？學員分享 URL 而家係 unguessable hash 形式，rotate deploy 會出新 URL。Stable alias 易記但 attacker 估到。建議：教 alias 概念但唔 push 上 production（學員自己揀）。</li>
-<li><strong>Q7.2</strong>：舊 deployment <code>dpl_9TmXvxSPuFjhvFdckf5nbYiBFtJq</code>（password 錯嘅 deploy）要唔要 <code>vercel rm</code>？建議：要，紅線 #4 incident playbook 嘅標準 hygiene。</li>
-<li><strong>Q7.3</strong>：Phase 8.6 應該包乜？目前列 (a) deploy-your-own.md 加「disable Vercel Authentication」Step 4.5，(b) 加「PowerShell BOM 陷阱」FAQ，(c) <code>vercel rm</code> 老 deployment hygiene。要唔要再做？</li>
+<li><strong>Q7.1 ✅ Resolved 2026-05-29 20:40</strong>：Stable alias <code>https://dotai-personal-os.vercel.app</code> 已 set（Kenneth 拍板「教學期間開」）。Stable URL 5/5 checklist verify pass + 5 SECURITY_HEADERS confirm。課程後 30 秒 <code>vercel alias rm</code> 收返。</li>
+<li><strong>Q7.2 ✅ Resolved 2026-05-29</strong>：<code>dotai-personal-ormcn3kjq-...</code>（password 錯嘅老 deploy）已 <code>vercel rm</code>。剩低 active production = <code>dpl_...83baejcb5</code>，alias 指住佢。</li>
+<li><strong>Q7.3 ✅ Resolved 2026-05-29 → Phase 8.6 shipped (commit <code>01106b3</code>)</strong>：(a) Step 4.5 ✓、(b) PowerShell BOM FAQ + Preview env CLI rejection FAQ ✓、(c) <code>vercel rm</code> 老 deployment ✓。</li>
+</ul>
+
+<h2>Phase 8.6：Doc Patches + Fixture（SHIPPED 2026-05-29 commit <code>01106b3</code>）</h2>
+<p class="status-shipped">✅ Shipped — Phase 7 lived-experience knowledge fed back into teaching docs</p>
+
+<h4>實作</h4>
+<ul>
+<li><code>deploy-your-own.md</code> 新增 Step 4.5「🚨 關咗 Vercel Authentication」— 預防學員撞我 Phase 7 撞嘅 SSO blocker</li>
+<li><code>deploy-your-own.md</code> Step 5.1 status marker：由「⚠️ 未 verify」改「✅ production verified 2026-05-29」</li>
+<li><code>deploy-your-own.md</code> FAQ 新增：PowerShell <code>Write-Output</code> 入 vercel env 嘅 BOM 陷阱 + Preview env CLI 非互動 reject 嘅 dashboard workaround</li>
+<li><code>sample-vault/00 - Inbox/clipped-article.md</code> Q8.5.4 fixture ship — HTML comment 注入 + outbound markdown image，配 §3.1 injection demo + §3.3 audit demo</li>
+<li><code>security.md</code> §3.1 + §3.3 改 reference 真實 fixture path（原寫 <code>vault/raw/...</code> 改 <code>sample-vault/00 - Inbox/...</code>）</li>
+<li><code>prompts/security-prompts.md</code> Pattern 3 example path 同步更新</li>
+<li>Stable alias <code>https://dotai-personal-os.vercel.app</code> set up</li>
+<li>Old broken-password deployment <code>vercel rm</code></li>
+</ul>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>Fixture 觸發 audit P0 hit by design</strong>：<code>npm run security:audit</code> 跑 default 路徑會即時 catch fixture 入面 <code>https://attacker.example.com</code> outbound URL。原本 spec 預期「audit 預設 0 hit」，實際變「first run 1 P0 hit 係 teaching artifact」。改寫 §3.3 narrative 解釋呢個 by design。學員想 clean 嘅可以 (a) 移走 fixture，或 (b) audit script 嘅 <code>ALLOWED_OUTBOUND_HOSTS</code> 加 <code>example.com</code>。</li>
+<li><strong>Fixture 落 <code>00 - Inbox/</code> 而唔係 spec 提議嘅 <code>vault/raw/</code></strong>：對齊 Kenneth 真 vault 「Inbox = untrusted raw」convention，學員 mental model 一致。</li>
 </ul>
 
 <h2>Phase 7 原 placeholder（已 obsolete）</h2>
@@ -435,7 +456,7 @@ ul { margin: 0.6rem 0; }
 </ul>
 
 <p style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e6edf5; color: #66758a; font-size: 0.85rem;">
-Generated 2026-05-25 HKT. <strong>Updated 2026-05-29 17:55 HKT</strong> — Phase 7 SHIPPED (production URL <code>dotai-personal-83baejcb5-kennethlaw325s-projects.vercel.app</code> live, Basic Auth gate + SECURITY_HEADERS verified). Q8.5.2 ✅ resolved live. Phase 1-8.5 + 7 shipped. 3 new Q7.1-7.3 open (stable alias / old deployment hygiene / Phase 8.6 scope). 62 file in repo + middleware.ts (新)。
+Generated 2026-05-25 HKT. <strong>Updated 2026-05-29 20:45 HKT</strong> — Phase 1-7 + 8 + 8.5 + 8.6 ALL SHIPPED. Stable URL: <code>https://dotai-personal-os.vercel.app</code> (3 env vars set, Basic Auth verified, 5 SECURITY_HEADERS confirm). All open Q resolved except Q8.5.3 (AGENTS.md verify pending Kenneth Codex Desktop session) + Q8.5.4 fixture ✓. 63 file in repo + sample-vault/00 - Inbox/clipped-article.md (Q8.5.4 fixture).
 </p>
 
 </body>
