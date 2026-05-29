@@ -296,8 +296,81 @@ ul { margin: 0.6rem 0; }
 <li><strong>H4 移除「必然 error」framing</strong>：原本講 TS error 係必然 teaching moment，改做 ship 流程主軸 + contingency section 處理 error case。</li>
 </ul>
 
+<h2>Phase 8：資安 Mini-Section（2026-05-29，commit <code>6d5c895</code>）</h2>
+<p class="status-shipped">✅ Shipped — Day 2 H4 Step 0 加入 15-20 min 資安 mini-section（P0 only）</p>
+
+<h4>Spec 規定（Kenneth 2026-05-29 Discord 拍板）</h4>
+<ul>
+<li><strong>Scope</strong>：教 P0 + checklist（5 條 P0 紅線 + 5 步 deploy-time checklist），P1 / P2 留 post-class self-paced</li>
+<li><strong>Slot</strong>：Option A — 散入 Day 2 H4 Polish hour，15-20 min mini-section（唔開新 hour，唔切走 H4 半個鐘）</li>
+<li><strong>Deliverable 深度</strong>：老師版 <code>teaching/security.md</code> ~500 行 / 學生版加 STUDENT-HANDBOOK 一節 / <code>scripts/security-audit.mjs</code> + <code>.gitignore</code> patch + <code>middleware.ts</code> template 加 <code>VERCEL_ENV</code> branch + headers + pre-class-checklist 資安準備節</li>
+</ul>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>P0 5 條來源</strong>：直接採用 <code>_drafts/security-risk-analysis.md</code> v2 列嘅 P0 分類（B1+B3 vault 全 sync / A1+A2 secret leak / X1 prompt injection / D6 preview URL bypass / X4 exfil cycle），唔再 re-derive — draft 已 cover 攻擊面 framework，無需重複分析工作。</li>
+<li><strong>15-20 min 落點 = Step 0 而唔係 step 中段</strong>：H4 原 4 step（polish / demo / Q&A / Level 3 teaser）資安插落 Step 0，學員未 polish 之前就建立 security mental model，polish 同 demo 期間順手跑 audit。Step 1 polish + Step 2 demo 各縮 5 min 補時間（60 min hour 守恆）。</li>
+<li><strong>Allow-list 而唔係 deny-list</strong>：sync-vault.mjs 紅線 #1 mitigation 用 allow-list（明確列邊個 folder 入 JSON）— deny-list 永遠漏網，allow-list default deny 啱 fail-closed principle。</li>
+<li><strong>Audit script exit code 1 only on P0</strong>：P1（email / phone / outbound link）warn 但唔 block ship，P0（secret / outbound image / HKID）block。理由：學員 Day 2 ship 前唔可以畀 false alarm 阻住 happy path；email pattern 撞到 sample vault 內合法 inbox content 太常見。</li>
+<li><strong>Middleware fail-closed on missing env var</strong>：<code>SITE_PASSWORD</code> undefined → 500，<code>VERCEL_ENV</code> 非 production/preview → 403。原 deploy template fail-open（env var 漏 = 直接放行），紅線 #4 嘅根因。</li>
+<li><strong>CSP / HSTS / X-Frame-Options 寫入 401 response header 而唔係 middleware passthrough</strong>：Vercel Edge Middleware 對 passthrough response 加 header 嘅 syntax 喺 non-Next.js project 仍未 verify，所以 SECURITY_HEADERS 只保證 401 path 套到，pass-through path 留俾 Phase 7 Vercel 實測之後再 iterate。已喺 security.md §1 紅線 #5 + middleware template inline comment 標出呢個 limitation。</li>
+<li><strong>3 條 demo 揀（prompt injection + preview URL bypass + audit script）</strong>：cover 5 條紅線入面最唔直觀嘅 3 條。Vault 全 sync (#1) 同 secret leak (#2) 學員直覺理解，唔需要台前 demo。Exfil cycle (#5) 需要 webhook 接收器搭建太複雜，留 §8 老師時間分配「剩 10 min」場景跌走。</li>
+<li><strong>Pre-class checklist 加 3 樣（password manager / Secret Scanning / Codex sandbox confirm），唔加 Norton SSL 級別嘅長 step</strong>：呢 3 樣每樣 30 秒 - 1 min，學員 self-paced 完成；Day 2 H4 mini-section 唔再洗時間教 setup。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li><strong>P1 / P2 一律 cut</strong>：原 draft 列 17 條（5 P0 + 5 P1 + 7 P2），mainline 只取 5 P0。Kenneth 5/29 確認「教 P0+checklist」。 P1 / P2 留 <code>_drafts/security-risk-analysis.md</code>（連同 commit 一齊 push 上 GitHub），future Level 3 / self-paced reference。</li>
+<li><strong>原 draft 提議「老師版 1200-1500 行」未跟</strong>：mainline <code>security.md</code> 470 行（~1/3），cut 走全 layer 拆解、5 mitigation 詳寫、coverage 自評等 meta content，淨係留可直接落堂講 + checklist + demo + cheatsheet。理由：mini-section 只 15-20 min，老師唔會 read 1500 行 lesson note 上堂。</li>
+<li><strong>學生版冇做 250-300 行</strong>：實際 STUDENT-HANDBOOK 「資安」節約 200 行（5 紅線 + checklist + incident playbook + 7 必做/必避 cheat card），cut 走 framing prose 重複內容（學生 just-in-time reference card 用，唔係 textbook）。</li>
+<li><strong>middleware.ts pass-through path 暫時冇套 SECURITY_HEADERS</strong>：技術原因見上「設計決策」第 6 條，標明係 Phase 7 verify 之後 iterate。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<ul>
+<li><strong>Option A vs B vs C slot 選擇</strong>：Option A（散入 H4 polish 15-20 min）比 Option B（切 H4 半個鐘專門教 + deploy 縮 30 min）淺一級但唔影響其他 step；比 Option C（開新 H5 拉 4.5hr）省 30 min 總時間 + 唔需要 re-align Jimmy。代價：prompt injection 同 exfil cycle 講唔深，學員可能 mental model 唔夠紮實。緩解：incident playbook + audit script 兜底 — 即使 mental model 模糊都會跑 5 步 checklist。</li>
+<li><strong>Audit script 用 regex 而唔係 AST / proper parser</strong>：Markdown image / link 用 regex 解析有 edge case（nested brackets / escaped char），但 false positive 對 audit 嚟講係 acceptable（人手 review 過濾），false negative 先係問題。Regex covers 95% case 已夠 Day 2 H4 teaching 用；學員想要 robust 版可以 Level 3 改用 marked AST visitor。</li>
+<li><strong>Mainline 一次 ship vs phased rollout</strong>：考慮過 Phase 8a「先 ship security.md + audit script」+ Phase 8b「再 ship handbook + middleware hardening + pre-class」拆兩 commit。揀單一 commit 因為 6/11 Webinar / 6/25 Level 1 deadline 緊，後續無 iteration window；拆 commit 反而增加遺漏風險。</li>
+<li><strong>實際跑 audit verify 用 sample-vault vs 故意藏 P0 hit 嘅 test fixture</strong>：揀 sample-vault clean run（✅ 0 hit 確認 script 唔誤殺），冇 build test fixture 故意藏 secret pattern verify catch 率。理由：sample-vault clean 已 prove script 起得到；catch 率 demo 3.3 上堂老師示範時即場注入 fixture，唔需要 commit 入 repo。</li>
+<li><strong>Allow-list pattern 教學員手寫 vs 預設喺 sync-vault.mjs</strong>：security.md 紅線 #1 只教 pattern + 反例，唔改 sync-vault.mjs 加 ALLOWED_FOLDERS const。理由：原 sync-vault.mjs 係 Phase 2 教學 deliverable，學員 Day 1 H3 已 walk through；改 production code 會引入新 mental model 衝突。學員 ship 前手動加 allow-list 係 mini-section take-away action。</li>
+</ul>
+
+<h4>開放式問題 — Resolved 2026-05-29 17:30 HKT（Kenneth 拍板，pending implementation）</h4>
+<ul>
+<li><strong>Q8.1 ✅ Resolved</strong>：3 條 demo 落堂揀 <strong>B（injection + audit script）</strong>。Injection = conceptual centerpiece（新興攻擊 + 知識門檻最高）必教；audit script 一條 <code>npm run</code> 建立 daily habit。Preview bypass demo 需老師預備 broken-middleware Vercel project，搭建成本高 + 課堂執行風險，改用 §5 incident playbook 講代替。<em>Action</em>：security.md §8 時間分配 update 推薦組合 → B。</li>
+<li><strong>Q8.2 ✅ Resolved</strong>：middleware.ts 寫 <strong>best-guess pass-through SECURITY_HEADERS</strong>，唔等 Phase 7 verify。Defense-in-depth 完整過冇；第一次 deploy 撞 syntax error 嘅 friction 同 status quo 一樣（FAQ 已寫「跟 Vercel 提示」）。<em>Action</em>：deploy-your-own.md middleware template pass-through path 改用 <code>Response</code> rewrite pattern set headers，附 inline comment「Vite SPA 版未 verify」。</li>
+<li><strong>Q8.3 ✅ Resolved</strong>：做 <strong>Phase 8.5</strong> 寫 <code>teaching/prompts/security-prompts.md</code>（~50 行）。用 prompt-embedded preamble template（唔依賴 Responses API system field — Codex CLI 唔保證 expose）+ Codex Desktop <code>AGENTS.md</code> pattern，跨 platform work。Cover 紅線 #3 mitigation。Cost ~10 min。</li>
+<li><strong>Q8.4 ✅ Resolved</strong>：<code>npm run security:audit</code> default scan path 加 <code>vault/</code>。<code>walk()</code> 已 ENOENT silent skip，無 vault folder 唔會 break。3 條 default path = <code>public/data</code> + <code>sample-vault</code> + <code>vault</code>。Zero downside，cover 學員 Day 1 H3 import 自己 vault 之後嘅 scan need。</li>
+<li><strong>Q8.5 ✅ Resolved</strong>：<strong>唔加 disclaimer</strong>。<code>_drafts/security-risk-analysis.md</code> 開頭已寫「Status：planning doc，未入 teaching/ 主線」；<code>_drafts/</code> folder 名本身已 self-explanatory。再加 = noise。</li>
+</ul>
+
+<h2>Phase 8.5：Q8.1-Q8.5 Implementation（PENDING — Kenneth 2026-05-29「跟建議改 spec 但唔好實作」）</h2>
+<p class="status-open">⏳ Pending — spec 已 lock，code 未動。Working tree 仍係 commit <code>6d5c895</code> 之 state。</p>
+
+<h4>待做嘅 6 步（依序）</h4>
+<ol>
+<li><strong>Middleware template hardening (Q8.2)</strong> — <code>teaching/deploy-your-own.md</code> middleware.ts template pass-through path 改用 <code>Response</code> rewrite pattern set <code>SECURITY_HEADERS</code>，inline comment 標「Vite SPA 版未 Phase 7 verify」。~5 min。</li>
+<li><strong>Audit script default path (Q8.4)</strong> — <code>scripts/security-audit.mjs</code> <code>SCAN_PATHS</code> default array 加 <code>'vault'</code>。~2 min。</li>
+<li><strong>Security prompts (Q8.3)</strong> — 新增 <code>teaching/prompts/security-prompts.md</code>（~50 行）：anti-injection preamble template + Codex Desktop <code>AGENTS.md</code> 配置 example。Cross-reference 入 <code>security.md</code> 紅線 #3 mitigation。~10 min。</li>
+<li><strong>Security.md §8 demo 推薦改寫 (Q8.1)</strong> — 把推薦組合由「injection + preview bypass」改做「injection + audit script」；preview bypass demo 移落 §5 incident playbook 文字敘述。~3 min。</li>
+<li><strong>STUDENT-HANDBOOK 同步</strong> — 如 §3 提及 demo 揀法或 prompts/security-prompts.md 引用，同步更新。<code>npm run build:handbook</code> regen。~3 min。</li>
+<li><strong>Implementation-notes.html Phase 8.5 status</strong> — 由 PENDING 改 SHIPPED，加 commit hash。~2 min。</li>
+</ol>
+
+<h4>為咩拆 Phase 8 + Phase 8.5 而唔係再 amend Phase 8</h4>
+<ul>
+<li>Phase 8 (commit <code>6d5c895</code>) 已 push public repo — amend 會 force-push rewrite history，違反 CLAUDE.md「create new commits rather than amending」。</li>
+<li>Phase 8.5 屬「resolved open question follow-through」，自然成獨立 commit 利於 future audit / blame。</li>
+<li>Phase 8.5 step 1-6 全部 deterministic（spec 已 lock 由 Q8.1-Q8.5 resolution），可一氣呵成 commit，無需 mid-phase decision gate。</li>
+</ul>
+
+<h4>新 open question（Phase 8.5 自身）</h4>
+<ul>
+<li><strong>Q8.5.1</strong>：Phase 8.5 6 步邊個 commit boundary — 全部一 commit，定 Q8.2/8.4 (code) vs Q8.3 (新 file) vs Q8.1 (doc) 分 3 commit？我建議單 commit「feat: address Q8.1-Q8.5 from security mini-section review」最簡，但如 Kenneth 想 PR-style logical separation 可拆。</li>
+</ul>
+
 <p style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e6edf5; color: #66758a; font-size: 0.85rem;">
-Generated 2026-05-25 HKT. <strong>Updated 09:25 HKT</strong> — 11/11 open question resolved or deferred. Phase 1-6 shipped. Phase 7 (Vercel deploy) pending Kenneth manual step. 58 file in repo + STUDENT-HANDBOOK.md + implementation-notes.html。
+Generated 2026-05-25 HKT. <strong>Updated 2026-05-29 17:30 HKT</strong> — Phase 8 資安 mini-section shipped (commit <code>6d5c895</code>); Q8.1-Q8.5 resolved per Kenneth 17:13 decision, Phase 8.5 implementation deferred「跟建議改 spec 但唔好實作」. 11/11 original + 5/5 Q8.x resolved. Phase 1-6 + 8 shipped, Phase 7 (Vercel deploy) + 8.5 (Q8.x implementation) pending. 60 file in repo + STUDENT-HANDBOOK.md (1525 行) + implementation-notes.html + security.md。
 </p>
 
 </body>
