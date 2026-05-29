@@ -15,7 +15,7 @@
  *  - 學員之後可以加 entity（reading list / habit / project）跟同一 pattern
  */
 
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, realpath } from "node:fs/promises";
 import { join, dirname, basename, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import fg from "fast-glob";
@@ -30,12 +30,29 @@ const OUT_DIR = join(ROOT, "public", "data");
 // Rule source: ~/.claude/memory/feedback_dotai_no_real_vault_sync.md (2026-05-29).
 // 學員 fork 自己 vault 唔受影響（path 唔含呢個 keyword）。
 // 如 vault path 日後移動，喺 sync command 加 ALLOW_REAL_VAULT=1 環境變數 override。
+//
+// M2 fix: strict opt-in — only literal '1' bypasses (ALLOW_REAL_VAULT=0/false/anything-else still blocks).
+// L6 fix: realpath() resolves symlinks before regex test, defeats mklink junction bypass.
 const FORBIDDEN_VAULT_PATTERNS = [/Desktop[\\/]Obsidian/i];
-if (!process.env.ALLOW_REAL_VAULT && FORBIDDEN_VAULT_PATTERNS.some((p) => p.test(VAULT_DIR))) {
-  console.error(`❌ Refusing to sync real Obsidian vault: ${VAULT_DIR}`);
-  console.error(`   Production deploy only allows sample-vault/.`);
-  console.error(`   Override (本機 dev only, 唔好 commit public/data/) with ALLOW_REAL_VAULT=1.`);
-  process.exit(1);
+
+async function checkVaultGuard() {
+  if (process.env.ALLOW_REAL_VAULT === "1") return;
+
+  let resolved = VAULT_DIR;
+  try {
+    resolved = await realpath(VAULT_DIR);
+  } catch {
+    // VAULT_DIR doesn't exist yet — fall through, regex test on raw string
+  }
+
+  const blocked = FORBIDDEN_VAULT_PATTERNS.some((p) => p.test(VAULT_DIR) || p.test(resolved));
+  if (blocked) {
+    console.error(`❌ Refusing to sync real Obsidian vault: ${VAULT_DIR}`);
+    if (resolved !== VAULT_DIR) console.error(`   (resolved via symlink to: ${resolved})`);
+    console.error(`   Production deploy only allows sample-vault/.`);
+    console.error(`   Override (本機 dev only, 唔好 commit public/data/) with ALLOW_REAL_VAULT=1.`);
+    process.exit(1);
+  }
 }
 
 const toPosix = (p) => p.split("\\").join("/");
@@ -225,6 +242,7 @@ async function syncContentDrafts() {
 }
 
 async function main() {
+  await checkVaultGuard();
   console.log(`📚 syncing vault: ${VAULT_DIR}`);
   console.log(`📤 output dir:    ${OUT_DIR}`);
   await ensureDir(OUT_DIR);

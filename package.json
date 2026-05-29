@@ -10,6 +10,7 @@
     "sync:vault": "node scripts/sync-vault.mjs",
     "insights": "node scripts/insights.mjs",
     "security:audit": "node scripts/security-audit.mjs",
+    "test": "node --test scripts/*.test.mjs",
     "build:handbook": "node scripts/build-handbook-html.mjs",
     "typecheck": "tsc -b --noEmit"
   },

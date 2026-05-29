@@ -12,13 +12,28 @@ export const config = {
 
 const SECURITY_HEADERS = {
   // 紅線 #5 cross-cut: 收緊 render-time exfil 通道
+  // NOTE: style-src 'unsafe-inline' kept because React JSX `style={{...}}` props
+  //       compile to inline style attributes (any tighter breaks SPA UI).
+  //       To remove: switch to className-only patterns + Tailwind utility class.
   'Content-Security-Policy':
     "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; frame-ancestors 'none'",
   'X-Frame-Options': 'DENY',
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'no-referrer',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  // L2 fix: add `preload` directive to qualify for HSTS preload list
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
 };
+
+// M1 fix: constant-time string compare to prevent timing-attack on password
+// Edge runtime doesn't expose node:crypto timingSafeEqual; implement manually.
+function constantTimeEq(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
 
 export default function middleware(request: Request) {
   const password = process.env.SITE_PASSWORD;
@@ -41,7 +56,7 @@ export default function middleware(request: Request) {
     let decoded = '';
     try { decoded = atob(encoded); } catch { /* invalid base64 */ }
     const [, supplied] = decoded.split(':');
-    if (supplied && supplied === password) {
+    if (supplied && constantTimeEq(supplied, password)) {
       // 紅線 #5 fix: pass-through path 都套 SECURITY_HEADERS
       return next({
         headers: SECURITY_HEADERS,

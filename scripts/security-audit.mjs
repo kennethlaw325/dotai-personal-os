@@ -9,8 +9,10 @@
 //
 // Usage:
 //   npm run security:audit
-//   node scripts/security-audit.mjs                  # default: ./public/data + ./sample-vault
+//   node scripts/security-audit.mjs                  # default: ./public/data + ./sample-vault + ./vault
 //   node scripts/security-audit.mjs <path> [<path>]  # custom scan paths
+//
+// Skip a file from audit: add `audit_skip: true` to its frontmatter (L7 fix).
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -26,37 +28,25 @@ const ALLOWED_OUTBOUND_HOSTS = new Set([
   // 'cdn.jsdelivr.net',
 ]);
 
-const PATTERNS = {
+// M3 fix: single source of truth — regex + severity in same record per rule.
+// Add new rule = add one entry, no cross-map drift.
+export const RULES = {
   // P0 — secret / key
-  'openai-key': /sk-[A-Za-z0-9]{20,}/g,
-  'anthropic-key': /sk-ant-[A-Za-z0-9_-]{20,}/g,
-  'huggingface-token': /\bhf_[A-Za-z0-9]{20,}/g,
-  'aws-access-key': /\bAKIA[0-9A-Z]{16}\b/g,
-  'generic-secret-assign': /\b(OPENAI_KEY|ANTHROPIC_KEY|API_KEY|SECRET|TOKEN|PASSWORD)\s*=\s*['"]?[A-Za-z0-9_\-]{12,}/gi,
-  'private-key-block': /-----BEGIN (?:RSA |EC |OPENSSH |DSA |)PRIVATE KEY-----/g,
+  'openai-key':            { severity: 'P0', regex: /sk-[A-Za-z0-9]{20,}/g },
+  'anthropic-key':         { severity: 'P0', regex: /sk-ant-[A-Za-z0-9_-]{20,}/g },
+  'huggingface-token':     { severity: 'P0', regex: /\bhf_[A-Za-z0-9]{20,}/g },
+  'aws-access-key':        { severity: 'P0', regex: /\bAKIA[0-9A-Z]{16}\b/g },
+  // Use negative lookbehind on alphanumeric so SITE_PASSWORD etc. (separator = `_`) still match.
+  'generic-secret-assign': { severity: 'P0', regex: /(?<![A-Za-z0-9])(OPENAI_KEY|ANTHROPIC_KEY|API_KEY|SECRET|TOKEN|PASSWORD)\s*=\s*['"]?[A-Za-z0-9_\-]{12,}/gi },
+  'private-key-block':     { severity: 'P0', regex: /-----BEGIN (?:RSA |EC |OPENSSH |DSA |)PRIVATE KEY-----/g },
+  'hkid':                  { severity: 'P0', regex: /\b[A-Z]{1,2}\d{6}\(?[A0-9]\)?/g },
+  // L5 fix: balanced-paren URL extractor — supports `\)` escaped close paren in markdown URLs.
+  'markdown-outbound-image': { severity: 'P0', regex: /!\[[^\]]*\]\((https?:\/\/(?:\\\)|[^)])+)\)/g },
 
-  // P1 — PII
-  'email': /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g,
-  'hk-phone': /\b[5-9]\d{3}[\s-]?\d{4}\b/g,
-  'hkid': /\b[A-Z]{1,2}\d{6}\(?[A0-9]\)?/g,
-
-  // P0 — outbound URL in markdown (image or link)
-  'markdown-outbound-image': /!\[[^\]]*\]\((https?:\/\/[^)]+)\)/g,
-  'markdown-outbound-link': /(?<!!)\[[^\]]*\]\((https?:\/\/[^)]+)\)/g,
-};
-
-const SEVERITY = {
-  'openai-key': 'P0',
-  'anthropic-key': 'P0',
-  'huggingface-token': 'P0',
-  'aws-access-key': 'P0',
-  'generic-secret-assign': 'P0',
-  'private-key-block': 'P0',
-  'email': 'P1',
-  'hk-phone': 'P1',
-  'hkid': 'P0',
-  'markdown-outbound-image': 'P0',
-  'markdown-outbound-link': 'P1',
+  // P1 — PII / lower-severity
+  'email':                 { severity: 'P1', regex: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g },
+  'hk-phone':              { severity: 'P1', regex: /\b[5-9]\d{3}[\s-]?\d{4}\b/g },
+  'markdown-outbound-link': { severity: 'P1', regex: /(?<!!)\[[^\]]*\]\((https?:\/\/(?:\\\)|[^)])+)\)/g },
 };
 
 async function walk(dir) {
@@ -74,7 +64,8 @@ async function walk(dir) {
       if (['node_modules', '.git', 'dist', '.vite'].includes(ent.name)) continue;
       out.push(...await walk(full));
     } else if (ent.isFile()) {
-      if (/\.(md|json|txt|env)$/i.test(ent.name) || ent.name === '.env') {
+      // L3 fix: also match .markdown extension (Obsidian / Logseq variants).
+      if (/\.(md|markdown|json|txt|env)$/i.test(ent.name) || ent.name === '.env') {
         out.push(full);
       }
     }
@@ -90,11 +81,44 @@ function extractHost(url) {
   }
 }
 
-function scanText(text, file) {
-  const findings = [];
-  const lines = text.split('\n');
+// L7 fix: detect `audit_skip: true` in YAML frontmatter (first --- block).
+export function hasAuditSkipFlag(text) {
+  if (!text.startsWith('---')) return false;
+  const end = text.indexOf('\n---', 3);
+  if (end < 0) return false;
+  const frontmatter = text.slice(3, end);
+  return /^\s*audit_skip\s*:\s*true\s*$/im.test(frontmatter);
+}
 
-  for (const [name, regex] of Object.entries(PATTERNS)) {
+// L4 fix: pre-compute line-start byte offsets once per file (O(n)), then binary-search
+// per match (O(log n)) instead of O(n) re-scan per match.
+function buildLineIndex(text) {
+  const offsets = [0];
+  for (let i = 0; i < text.length; i++) {
+    if (text.charCodeAt(i) === 10 /* \n */) offsets.push(i + 1);
+  }
+  return offsets;
+}
+
+function lineOf(offsets, charIndex) {
+  // binary search for largest offset <= charIndex
+  let lo = 0, hi = offsets.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >>> 1;
+    if (offsets[mid] <= charIndex) lo = mid;
+    else hi = mid - 1;
+  }
+  return lo + 1; // 1-indexed line number
+}
+
+export function scanText(text, file = '<inline>') {
+  const findings = [];
+  if (hasAuditSkipFlag(text)) return findings;
+
+  const lines = text.split('\n');
+  const offsets = buildLineIndex(text);
+
+  for (const [name, { regex, severity }] of Object.entries(RULES)) {
     regex.lastIndex = 0;
     let m;
     while ((m = regex.exec(text)) !== null) {
@@ -104,15 +128,13 @@ function scanText(text, file) {
         if (host && ALLOWED_OUTBOUND_HOSTS.has(host)) continue;
       }
 
-      // Find line number
-      const before = text.slice(0, m.index);
-      const lineNum = before.split('\n').length;
+      const lineNum = lineOf(offsets, m.index);
       const lineContent = lines[lineNum - 1] ?? '';
 
       findings.push({
-        file: path.relative(ROOT, file),
+        file: file === '<inline>' ? file : path.relative(ROOT, file),
         line: lineNum,
-        severity: SEVERITY[name],
+        severity,
         pattern: name,
         match: m[0].slice(0, 80),
         context: lineContent.trim().slice(0, 120),
@@ -126,7 +148,7 @@ async function main() {
   console.log('🔒 Personal OS — security audit\n');
   console.log(`Scanning: ${SCAN_PATHS.join(', ')}\n`);
 
-  let allFindings = [];
+  const allFindings = [];
   for (const p of SCAN_PATHS) {
     const abs = path.resolve(ROOT, p);
     const files = await walk(abs);
@@ -168,7 +190,11 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((e) => {
-  console.error('Audit script error:', e);
-  process.exit(2);
-});
+// Only run main if invoked directly (not when imported by tests)
+if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}` ||
+    process.argv[1].endsWith('security-audit.mjs')) {
+  main().catch((e) => {
+    console.error('Audit script error:', e);
+    process.exit(2);
+  });
+}
