@@ -305,6 +305,62 @@ ul { margin: 0.6rem 0; }
 <li><strong>Fixture 落 <code>00 - Inbox/</code> 而唔係 spec 提議嘅 <code>vault/raw/</code></strong>：對齊 Kenneth 真 vault 「Inbox = untrusted raw」convention，學員 mental model 一致。</li>
 </ul>
 
+<h2>Phase 8.7：Code Review Fixes（SHIPPED 2026-05-29 commit <code>d752d4e</code> + <code>9709245</code>）</h2>
+<p class="status-shipped">✅ Shipped — 11/11 review findings fixed + 24 unit tests + production re-deploy + alias re-point</p>
+
+<h4>觸發</h4>
+<p>Kenneth 跑 <code>/ecc:code-review</code> 對今日 6 commit 嘅 3 隻 code file（middleware.ts / security-audit.mjs / sync-vault.mjs）做 review。Decision = APPROVE with comments（0 CRITICAL / 0 HIGH / 4 MEDIUM / 7 LOW）。Kenneth 拍板「全部 fix」，即時 11/11 ship。</p>
+
+<h4>11 條 finding 對應 fix</h4>
+
+<table>
+<tr><th>ID</th><th>Severity</th><th>File</th><th>Fix</th></tr>
+<tr><td>M1</td><td>MEDIUM</td><td>middleware.ts:44</td><td>Constant-time password compare via manual bitwise loop（Edge runtime 冇 <code>crypto.timingSafeEqual</code>）— prevent timing-attack on per-char early exit</td></tr>
+<tr><td>M2</td><td>MEDIUM</td><td>sync-vault.mjs:34</td><td><code>ALLOW_REAL_VAULT</code> 改 strict opt-in（<code>=== '1'</code>），原本 <code>=0</code>/<code>=false</code> 都會 bypass 因為 string 係 truthy</td></tr>
+<tr><td>M3</td><td>MEDIUM</td><td>security-audit.mjs:29-60</td><td>Unify PATTERNS + SEVERITY 做單一 <code>RULES</code> catalog，加新 rule 唔會 drift</td></tr>
+<tr><td>M4</td><td>MEDIUM</td><td>scripts/security-audit.test.mjs (NEW)</td><td>24 unit tests via <code>node:test</code> 內建 module（zero deps）— RULES shape + 18 hit-or-miss + frontmatter skip + line number + escaped paren</td></tr>
+<tr><td>L1</td><td>LOW</td><td>middleware.ts:14-17</td><td>CSP <code>style-src 'unsafe-inline'</code> 保留 + inline comment 解釋（React JSX <code>style={{...}}</code> 編譯成 inline style attribute，tighten 會破 SPA UI）</td></tr>
+<tr><td>L2</td><td>LOW</td><td>middleware.ts:20</td><td>HSTS 加 <code>preload</code> directive，可 submit 上 HSTS preload list — live verify: <code>Strict-Transport-Security: max-age=31536000; includeSubDomains; preload</code></td></tr>
+<tr><td>L3</td><td>LOW</td><td>security-audit.mjs:77</td><td>Scan 加埋 <code>.markdown</code> extension（Obsidian / Logseq 變種）</td></tr>
+<tr><td>L4</td><td>LOW</td><td>security-audit.mjs:108-122</td><td>O(n) 一次 build line-offset index → binary-search O(log n) per match，由 O(n²) 改 O(n log n)</td></tr>
+<tr><td>L5</td><td>LOW</td><td>security-audit.mjs:44</td><td>URL 正則加 <code>\)</code> escape 接受，handle markdown URL 含 escaped close paren</td></tr>
+<tr><td>L6</td><td>LOW</td><td>sync-vault.mjs:33-46</td><td><code>realpath()</code> resolve symlink 之後先 regex test，防 <code>mklink /D</code> junction bypass</td></tr>
+<tr><td>L7</td><td>LOW</td><td>security-audit.mjs:88-96</td><td>Frontmatter <code>audit_skip: true</code> flag 跳過個別 file，俾教學 fixture 自選 opt-out audit noise</td></tr>
+</table>
+
+<h4>Bonus catch 喺 test 過程</h4>
+
+<ul>
+<li><strong>Bug 修正</strong>：原 <code>generic-secret-assign</code> regex <code>\b(OPENAI_KEY|...|PASSWORD)\s*=</code> 對 <code>SITE_PASSWORD=value</code> <strong>唔 work</strong>，因為 <code>_</code> 係 word char，<code>_</code> + <code>P</code> 之間冇 word boundary。改用 <code>(?&lt;![A-Za-z0-9])</code> negative lookbehind，而家 catch real-world <code>SITE_PASSWORD=</code> case。Test fixture 直接 cover 呢條 regression。</li>
+<li>Pre-existing audit script 對 production deployment 嘅 <code>SITE_PASSWORD</code> env value 喺 leak 都 catch 唔到（因為 process.env 唔入 vault），但本地 <code>.env</code> commit 嘅 case 而家 cover 到。</li>
+</ul>
+
+<h4>Verify 全 green</h4>
+
+<ul>
+<li><code>npm run typecheck</code> ✅</li>
+<li><code>npm test</code> — 24 / 24 pass</li>
+<li><code>npm run security:audit</code> — 1 P0 (fixture by design)</li>
+<li><code>npm run build</code> — 1.39s, 49.23 KB gzip</li>
+<li>Guard test <code>VAULT_DIR=...Desktop/Obsidian ALLOW_REAL_VAULT=0</code> → ✅ rejected</li>
+</ul>
+
+<h4>Production re-deploy</h4>
+
+<ul>
+<li>因 GitHub→Vercel auto-deploy webhook 未 wire（早前 link 撞 OAuth），手動跑 <code>vercel deploy --prod --yes</code></li>
+<li>新 deployment <code>dpl_...eamhrz75a</code> Ready</li>
+<li><code>vercel alias set</code> 將 <code>dotai-personal-os.vercel.app</code> 重指新 deployment</li>
+<li>老 <code>dpl_...83baejcb5</code> <code>vercel rm</code> 清走（hygiene）</li>
+<li>Live curl verify：401 no-auth / 200 correct auth / 200 /data path / HSTS preload directive present</li>
+</ul>
+
+<h4>新 open question（Phase 8.7 自身）</h4>
+<ul>
+<li><strong>Q8.7.1</strong>：Vercel auto-deploy from GitHub 點 wire？而家每次 commit 都要手動 <code>vercel deploy --prod</code>。要 wire 需要 dashboard Settings → Git → Connect GitHub repo（OAuth 步驟，要 Kenneth 親做）。建議 wire 咗，否則 spec ship 同 production drift 風險高。</li>
+<li><strong>Q8.7.2</strong>：CI 跑 <code>npm test</code>？而家 test 純本機跑，PR 唔 enforce。GitHub Actions YAML 加 5 行即 cover。要唔要做？</li>
+</ul>
+
 <h2>Phase 7 原 placeholder（已 obsolete）</h2>
 <p class="status-open" style="opacity: 0.5"><del>⏳ Pending — 需要 Kenneth 登入 Vercel 親自完成 import + env var + deploy</del></p>
 
@@ -456,7 +512,7 @@ ul { margin: 0.6rem 0; }
 </ul>
 
 <p style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e6edf5; color: #66758a; font-size: 0.85rem;">
-Generated 2026-05-25 HKT. <strong>Updated 2026-05-29 20:45 HKT</strong> — Phase 1-7 + 8 + 8.5 + 8.6 ALL SHIPPED. Stable URL: <code>https://dotai-personal-os.vercel.app</code> (3 env vars set, Basic Auth verified, 5 SECURITY_HEADERS confirm). All open Q resolved except Q8.5.3 (AGENTS.md verify pending Kenneth Codex Desktop session) + Q8.5.4 fixture ✓. 63 file in repo + sample-vault/00 - Inbox/clipped-article.md (Q8.5.4 fixture).
+Generated 2026-05-25 HKT. <strong>Updated 2026-05-29 22:40 HKT</strong> — Phase 1-7 + 8 + 8.5 + 8.6 + 8.7 ALL SHIPPED. Stable URL: <code>https://dotai-personal-os.vercel.app</code> repointed to <code>dpl_...eamhrz75a</code> with 11/11 review fixes + 24 unit tests. All open Q resolved except Q8.5.3 (AGENTS.md verify pending) + Q8.7.1 (Vercel auto-deploy webhook) + Q8.7.2 (CI test). 64 file in repo + scripts/security-audit.test.mjs (新, 24 tests).
 </p>
 
 </body>
