@@ -1,6 +1,6 @@
 # Personal OS 資安風險全面分析
 
-**Status**：planning doc，未入 teaching/ 主線。Kenneth review 後決定 cover 範圍 + format 再寫正式教材。
+**Status**：planning doc，未入 teaching/ 主線。作者 review 後決定 cover 範圍 + format 再寫正式教材。
 **Date**：2026-05-27（v1 initial）/ 2026-05-27 v2（補 8 條 gap：Vercel preview URL bypass、exfil cycle、cookie/session、markdown exfil、client storage、clickjacking、token DoS、backup/recovery）
 
 ---
@@ -400,7 +400,7 @@ v2 濃縮約 250-300 行：
 
 ## 建議落手 sequence
 
-1. Kenneth review 呢份 → 講 cover 全部 P0+P1+P2 定 cut 邊幾條
+1. 作者 review 呢份 → 講 cover 全部 P0+P1+P2 定 cut 邊幾條
 2. Confirm 後寫 `teaching/security.md`（老師版 full）
 3. 同步寫 `STUDENT-HANDBOOK.md` 新一節（學生版濃縮）
 4. 寫 `scripts/security-audit.mjs` + 加 `npm run security:audit` script
