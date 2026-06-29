@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<title>Level 2 Skeleton — Implementation Notes</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; max-width: 920px; margin: 2rem auto; padding: 0 1rem; line-height: 1.55; color: #11243a; background: #f6f8fb; }
+h1 { border-bottom: 2px solid #003153; padding-bottom: 0.4rem; }
+h2 { color: #003153; margin-top: 2.2rem; border-left: 4px solid #3b82f6; padding-left: 0.6rem; }
+h3 { color: #11243a; margin-top: 1.4rem; }
+h4 { color: #66758a; margin-top: 1.1rem; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+code { background: #e6edf5; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.9em; }
+pre { background: #11243a; color: #f6f8fb; padding: 0.9rem; border-radius: 8px; overflow-x: auto; font-size: 0.85em; }
+blockquote { border-left: 3px solid #f59e0b; padding: 0.4rem 0.8rem; background: #fff7e6; margin: 0.8rem 0; }
+.status-shipped { color: #16a34a; font-weight: 600; }
+.status-wip { color: #f59e0b; font-weight: 600; }
+.status-blocked { color: #dc2626; font-weight: 600; }
+.status-open { color: #66758a; font-weight: 600; }
+table { border-collapse: collapse; width: 100%; margin: 0.8rem 0; }
+th, td { border: 1px solid #e6edf5; padding: 0.5rem 0.7rem; text-align: left; font-size: 0.9rem; }
+th { background: #e6edf5; }
+ul { margin: 0.6rem 0; }
+</style>
+</head>
+<body>
+<h1>Level 2 Skeleton — Implementation Notes</h1>
+<p><strong>建立日期</strong>：2026-05-25 HKT，autonomous overnight build per SPEC。</p>
+<p><strong>Final status</strong>：<span class="status-shipped">✅ ALL 4 PHASES SHIPPED + VERIFIED</span> — 1100+ 字 SPEC 解讀、5-view scaffold、vault-bridge sync script、12 個 teaching doc、npm install/sync/build/dev/preview 五條 verify command 全 green。</p>
+<p><strong>SPEC 摘要</strong>：起 Codex 網課 Level 2 教材；workflow-first 教學，唔教全端 detail；用 3-feature minimum (Capture/Plan/Reflect) 做 base 加 2 個 on-top feature；前端部署 (localhost prod build per 5/24 align)；Obsidian 做 DB；GitHub 基礎教學；verify 跑得起先算成功；唔修改 Jimmy repo code (build NEW scaffold)。</p>
+
+<h2>Phase 0：Scope + Architecture Lock</h2>
+<p class="status-shipped">✅ Shipped</p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>Skeleton 位置</strong>：擺喺 <code>C:/Users/Kenneth/Claude/dotai-personal-os/</code>。喺 Kenneth fork 下面，方便對比 Jimmy 5-view monolith；唔 push 上 GitHub 直至 Kenneth approve。</li>
+<li><strong>Stack</strong>：Vite + React 18 + TypeScript + Tailwind v3 + Lucide icons。TS 揀 strict mode（學員學 type safety，AI coding 配 strict 更好）。Tailwind v3 唔 v4 — v4 嘅 dark mode 仲未 stable on production presets (per <code>feedback_tailwind_v4_dark_mode</code>)。</li>
+<li><strong>Routing</strong>：用 <code>useState</code> 切 view，唔用 React Router。5 view 細到 routing library 係 overkill；學員學 conditional rendering 比學 Router config 對 personal OS 更實用。</li>
+<li><strong>Data 層</strong>：<code>public/data/*.json</code> 靜態文件，Vite serves。Frontend 用 <code>fetch('/data/tasks.json')</code> 讀。冇 backend (per 5/24「localhost only」decision + SPEC「唔修改 code」implies 唔起 Express)。</li>
+<li><strong>Obsidian → JSON pipeline</strong>：兩條 path
+<ol>
+<li><strong>Path A：Node sync script</strong>（<code>scripts/sync-vault.mjs</code>）— teaching-friendly，每行 code 學員睇得明。用 <code>gray-matter</code> 食 frontmatter，<code>fast-glob</code> 揀檔。Run via <code>npm run sync:vault</code>。</li>
+<li><strong>Path B：Obsidian MCP</strong>（教學 Day 1 H2 用）— Codex Desktop + Obsidian MCP 一句 prompt 出 JSON。寫入 teaching doc 做 default Day 1 demo（learning peak wow moment）。</li>
+</ol>
+</li>
+<li><strong>Base + on-top feature 揀法</strong>：3 base (Today / Tasks / Daily Note) per 我嘅 redesign。2 on-top揀「Vault Health」+「Content Pipeline」— match Kenneth memory：(a) SB+DB 系統剛 ship 5 phase，Vault Health surface inbox/orphan/recent atom，Kenneth 已用緊 <code>vault-lint-daily.ps1</code> Morning Brief；(b) TechPulse / Threads / X / IG / XHS = #1 daily work，Content Pipeline surface drafts status。</li>
+<li><strong>「部署」定義</strong>：<code>npm run build</code> + <code>npm run preview</code> 出 localhost:4173 production bundle。沿 5/24 client align「localhost only / 唔用 Cloud Codex」。教學 doc 另寫 cloud deploy (Vercel) 做 bonus / Level 3 teaser。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li>SPEC 寫「以上工作不涉及修改 code」— 解讀為「唔修改 Jimmy 既有 5478-line App.jsx 等」而非「完全唔寫 code」。原因：SPEC #1「前端用個人 os 做 base，要部署埋」+ SPEC #4「要驗證完係 work 先算成功」implies 必須有 runnable code 先 verify。如果解讀錯，請 morning review 時 flag — Q0.1。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<table>
+<tr><th>替代方案</th><th>揀咗咩</th><th>為何</th></tr>
+<tr><td>Next.js full-stack</td><td>Vite + React SPA</td><td>Level 2 教 personal OS workflow，唔教 SSR / server actions。Vite 起手快 30s vs Next 90s，學員「立即見到嘢」嘅 wow moment 更早。</td></tr>
+<tr><td>Express backend + SQLite</td><td>Static JSON files</td><td>Jimmy 用 Express+SQLite 已 prove 過 work 但係 5478-line monolith。Static JSON 教「file as DB」嘅 vault-driven mental model，符合 SPEC「Obsidian 做 DB」要求。Backend = future Phase 2 enhancement。</td></tr>
+<tr><td>Obsidian MCP only (no sync script)</td><td>Both — sync script 主、MCP doc 為 Day 1 H2 advanced demo</td><td>學員 Day 1 H1 唔一定 setup MCP 就要見到 dashboard 跑得起，所以 Path A (sync script) 做 baseline；Day 1 H2 加 MCP 做 wow moment。Production 用 A，rapid prototype 用 B。</td></tr>
+<tr><td>5 view 全部 ship</td><td>3 base + 2 on-top = 5 view</td><td>同 SPEC「on top 加一啲功能」一致；保住 base trio 教 closed loop 概念，2 on-top 教「workflow customization」。</td></tr>
+<tr><td>React Router</td><td><code>useState</code> conditional render</td><td>5 view 規模 routing 係 overkill，學員學 hooks 比學 Router config 更可遷移。</td></tr>
+<tr><td>Zustand / Redux state</td><td>Plain useState + lift-up</td><td>無 cross-view state；data fetch on view mount。學員學 useState + useEffect 已足夠。</td></tr>
+</table>
+
+<h4>開放式問題</h4>
+<ul>
+<li><strong>Q0.1</strong>：「以上工作不涉及修改 code」係咪指唔寫任何 production code 只寫教材？我解讀為「唔 hack Jimmy 原 repo，但 build NEW scaffold OK」。如果要純 teaching doc no code，會大改 Phase 1 + 3 範圍。</li>
+<li><strong>Q0.2</strong>：On-top feature 揀咗 Vault Health + Content Pipeline，仲有候選 Project Status / Watchlist (TSLL/NVDA) / Knowledge — 你想換邊個？</li>
+<li><strong>Q0.3</strong>：教學節奏沿 5/24 align「Day 1 4hr + Day 2 4hr = 8hr」？仲係要 condense 短啲？</li>
+<li><strong>Q0.4</strong>：學員 vault schema 樣板要包邊幾個 entity？我預咗 tasks (frontmatter) / daily note / drafts 三類。Kenneth memory 有提 todo / reflection / project / habit / reading list 5 類 — 要全部入樣板定夾住 3 個？</li>
+</ul>
+
+<h2>Phase 1：Scaffold (Vite + React + TS + Tailwind)</h2>
+<p class="status-shipped">✅ Shipped</p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>File layout</strong>：<code>src/views/*.tsx</code> 一個 file 一個 view；<code>src/lib/types.ts</code> 統一 type；<code>src/lib/fetchJson.ts</code> shared fetch helper。每 view < 200 lines（vs Jimmy 5478-line single file）。</li>
+<li><strong>5 view</strong>：<code>Today</code>（default landing）/ <code>Tasks</code> / <code>Daily Note</code> / <code>Vault Health</code> / <code>Content Pipeline</code>。Today default 因為 personal OS daily entry-point。</li>
+<li><strong>Type-driven</strong>：每個 view 有對應 interface 喺 <code>types.ts</code>。學員學 strict TS 點 catch errror 喺 build time。</li>
+<li><strong>Empty state handling</strong>：每個 view 都有 <code>tasks.length === 0</code> 嘅 friendly empty state（告訴學員「跑 npm run sync:vault」），唔係 blank screen — 提升 onboarding UX。</li>
+<li><strong>Tailwind palette</strong>：沿 Jimmy DESIGN.md (canvas #f6f8fb / panel #fff / brand #3b82f6 / navy #003153 / ink #11243a / muted #66758a)，學員 Day 2 H4 polish 可以改 brand color 但 base palette already calm/dense/readable。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li>原計劃 7 view (加 Drafts + Project Status)，砍到 5 view 因為 Day 2 H3 要留 60min hands-on 俾學員自己加 view — 預留空間。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<table>
+<tr><th>替代方案</th><th>揀咗咩</th><th>為何</th></tr>
+<tr><td>Drag-drop kanban for Content Pipeline</td><td>Read-only kanban (4 column grid)</td><td>Drag-drop write 返 vault 需要 backend。Read-only render + 學員自己 edit vault frontmatter 改 status = 教 vault-as-truth 原則。</td></tr>
+<tr><td>Markdown render (react-markdown)</td><td>Plain <code>&lt;pre&gt;</code> whitespace-pre-wrap</td><td>react-markdown 加 ~30kB dependency for一個 Daily Note view 嘅 nice-to-have。Plain pre 已 readable。Day 2 H3 hands-on 學員可以自己加 react-markdown 做 upgrade exercise。</td></tr>
+<tr><td>Search / filter in Tasks</td><td>Plain list, sorted by sync order</td><td>5 sample task 太少要 filter；學員 H3 hands-on 候選 feature 之一就係加 tag filter，留俾佢哋自己 ship。</td></tr>
+<tr><td>Light + Dark mode toggle</td><td>Light-only</td><td>Dark mode 加 Tailwind class strategy + state persistence = 30 min teaching tax。Day 2 H4 polish 列做 candidate exercise。</td></tr>
+</table>
+
+<h4>開放式問題</h4>
+<ul>
+<li><strong>Q1.1</strong>：5 view 太多定 OK？學員 8hr 課堂能消化邊個範圍？我預咗 H1 全部 sample data render → H3 學員自己加 → H4 polish，但如果 pacing 緊，可以 H1 砍到 3 base view。</li>
+</ul>
+
+<h2>Phase 2：Vault Bridge (sync script + Obsidian MCP doc)</h2>
+<p class="status-shipped">✅ Shipped</p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>Script 結構</strong>：<code>scripts/sync-vault.mjs</code> 一個 file 5 個 function（syncTasks / syncToday / syncDailyNotes / syncVaultHealth / syncContentDrafts），全部 mirror 同一 pattern：<code>fast-glob 拎 file → gray-matter parse frontmatter → transform → writeFile JSON</code>。教學上「重複 pattern」= 學員 mirror 自己 entity 嘅 mental model。</li>
+<li><strong>Local date computation</strong>：<code>todayString()</code> 用 local TZ 唔用 UTC（<code>new Date().toISOString()</code> 預設 UTC，HKT +8 會撞 date boundary 12 am 後）。可以用 <code>TODAY=YYYY-MM-DD npm run sync:vault</code> override 做 demo。</li>
+<li><strong>Orphan detection</strong>：scan all <code>**/*.md</code> 拎 wikilink match <code>[[name]]</code>，30-Notes 入面 0 inbound link = orphan。Best-effort 同 Kenneth 嘅 vault-blind-spot-detector.py 邏輯近，但簡化（detector 用 community-degree，呢度只用 inbound-count）。</li>
+<li><strong>VAULT_DIR env var</strong>：default sample-vault，但學員可以 <code>VAULT_DIR=/path npm run sync:vault</code> 切自己 vault。Sync script self-doc 點 override（README + script comments）。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li><strong>「不修改 code」嘅 cleanest interpretation</strong>：原本諗 Path B Obsidian MCP only（學員 Day 1 全程喺 Codex Desktop 一句 prompt 出 JSON，唔需要寫 Node script）。最終決定 Path A 為 baseline + Path B 為 Day 1 H2 wow moment，因為：(a) MCP setup 失敗時學員仲有 baseline；(b) Path A script 教 file/glob/frontmatter 三個 fundamental concept 比一句 prompt 隱身做晒值得；(c) 「不修改 code」我解讀為唔 hack Jimmy 個 5478-line App.jsx，唔係禁所有 code。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<table>
+<tr><th>替代方案</th><th>揀咗咩</th><th>為何</th></tr>
+<tr><td>watch mode (chokidar) auto-sync</td><td>On-demand <code>npm run sync:vault</code></td><td>Watch mode 加 chokidar dep + 學員 mental model「為咩 dashboard 自動 update」對 Level 2 太早。Day 2 H4 teaser 列做 candidate。</td></tr>
+<tr><td>JSON schema validation (zod / ajv)</td><td>Plain TS interface + runtime tolerant</td><td>Zod 加 30kB + 學員 schema 寫法第二門 language。TS interface + <code>String(...)</code>/<code>?? fallback</code> tolerant parse 對 personal OS 太足夠。學員 H3 hands-on 可以自己加 zod 學 schema validation。</td></tr>
+<tr><td>Sync 寫 Markdown 返 vault (2-way)</td><td>1-way only (vault → JSON)</td><td>2-way 需要 conflict resolution + backup。1-way 教「vault 係 truth，dashboard 係 render」原則。Level 3 teaser 提 2-way。</td></tr>
+</table>
+
+<h4>開放式問題</h4>
+<ul>
+<li><strong>Q2.1</strong>：學員自己 vault 可能用 Obsidian Tasks plugin 嘅 <code>- [ ] task</code> checkbox syntax，唔係我嘅 <code>tasks/*.md</code> frontmatter。要唔要加一個 parse helper 食 checkbox tasks？呢個係 schema flexibility vs teaching simplicity 嘅 trade-off。</li>
+<li><strong>Q2.2</strong>：Vault Health 嘅 orphan detection 而家 simplified，學員 vault 可能 thousand notes，scanning 慢。要唔要加 cache layer？我預咗 H4 polish 候選。</li>
+</ul>
+
+<h2>Phase 3：Teaching Material (Day 1 + Day 2)</h2>
+<p class="status-shipped">✅ Shipped — 12 個 teaching doc</p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>SYLLABUS.md</strong>：Day 1 + Day 2 × 4 hr 結構 lock per 5/24 client align，include risk + mitigation table（5/24 evening Discord 已 ship）。</li>
+<li><strong>Per-hour file</strong>：<code>day-1/h1-base.md</code> ... <code>day-2/h4-polish.md</code> 8 個 file，每個 file 有 Step-by-step / Codex prompt 範例 / 完成標準。Instructor 跑 class 直接 follow file 唔需要再臨場 design slide flow。</li>
+<li><strong>GitHub basics</strong>：<code>github-basics.md</code> mental model + 8 essential command + Codex prompt 配 Git，pre-class 同學員自學 + Day 2 H1 課堂 reinforcement。</li>
+<li><strong>Pre-class video script</strong>：5-min outline，老師可以照住屏錄 + voice over。</li>
+<li><strong>Codex prompt library</strong>：<code>teaching/prompts/codex-prompt-library.md</code> 一個 file 集中所有 hour 嘅 prompt 範例，學員可以隨時 lookup。</li>
+<li><strong>「Workflow first」原則</strong>：每個 hour file 嘅 Codex prompt 唔係 dump 「寫一個 component」呢類 vague prompt，而係 spec → context → constraint 三段式（「跟 src/views/TasksView.tsx pattern / 寫 strict TS / 唔好 rewrite 唔關事嘅 file」）。學員學 prompting discipline。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li>原計劃 Day 2 H2 教「Anthropic API direct call」，最終揀「Codex CLI 配 LLM」+ pure JS stats first。原因：(a) 學員 8hr 課程加 API client setup + key management overhead 太大；(b) Codex Desktop 已 wire 好 LLM，借用佢 = 真實 workflow；(c) stats-first/LLM-second 教學員「LLM cost discipline」比即時 ship narrative summary 更重要。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<table>
+<tr><th>替代方案</th><th>揀咗咩</th><th>為何</th></tr>
+<tr><td>Lecture-heavy slides</td><td>Hands-on workflow files</td><td>Level 2 學員已過 Level 1 fundamentals，係 doer 不再係 listener。每 hour 都有 deliverable + checkpoint。</td></tr>
+<tr><td>所有 hour 同一 outline format</td><td>Each hour file 個 outline 因應 hour 性質微調</td><td>H1 setup-heavy 用 Step 0/1/2... numbered；H2 conceptual heavy 加 mental model section；H3 hands-on 用 min-by-min budget。Outline 跟 content 走唔係硬套模板。</td></tr>
+<tr><td>學員 follow exact same feature</td><td>學員自選 feature 加</td><td>H1-H2 follow lock-step OK，但 H3 hands-on 學員自選 = 學員 personalize personal OS 嘅 first chance。每位學員 ship 自己 feature = 課程 wow moment + 個人化動力延續。</td></tr>
+<tr><td>Pre-class video 教 React</td><td>Pre-class video 教 Git mental model + Codex 5 動作</td><td>React 喺 Day 1 H1 學員直接 read code 學；Git + Codex 係 cross-cutting tool，pre-class 攔截一次 8hr 內唔需要重複教。</td></tr>
+</table>
+
+<h4>開放式問題</h4>
+<ul>
+<li><strong>Q3.1</strong>：Day 2 H3 hands-on 60min 5 學員每位 12 min — TA 1:5 ratio 夠 attentive 嗎？實際 pacing 可能要 1:3。</li>
+<li><strong>Q3.2</strong>：Pre-class video 5 min 唔夠教完 Git mental model + Codex 5 動作，要唔要分 2 條 video？</li>
+</ul>
+
+<h2>Phase 4：Verification</h2>
+<p class="status-shipped">✅ Shipped — npm install / sync / build / dev / preview 五條 verify command 全 green</p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>5 條 verify command</strong>：
+<ol>
+<li><code>npm install</code> — dependency tree 裝得到</li>
+<li><code>npm run sync:vault</code> — sample-vault → 5 個 JSON file 寫成功</li>
+<li><code>npm run build</code> — TypeScript compile + Vite bundle 出 dist/</li>
+<li><code>npm run dev</code> — Vite dev server 起 localhost:5173 + serve <code>/data/*.json</code></li>
+<li><code>npm run preview</code> — Production bundle 喺 localhost:4173 serve</li>
+</ol>
+</li>
+<li><strong>結果</strong>：全部 exit code 0，curl smoke test HTTP 200 + 對 5 個 JSON endpoint sample byte size 正常（tasks 809B / today 216B / daily-notes 930B / vault-health 546B / content-drafts 886B）。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li><strong>Norton SSL MITM hit npm install</strong>。第一次 <code>npm install</code> 出 <code>UNABLE_TO_VERIFY_LEAF_SIGNATURE</code> + npm bug「Exit handler never called」。Memory <code>reference_norton_ssl_mitm.md</code> 有寫 Python truststore fix 但 Node 冇 documented fix。揀 <code>NODE_OPTIONS=--use-system-ca</code>（Node 22+ flag，用 Windows cert store，bypass Norton MITM 嘅 cert verification 問題）— 12 秒 install 145 packages，clean exit。</li>
+<li><strong>學員機可能撞同一 issue</strong>。HK 企業用 Norton / Symantec 比率高，pre-class checklist 要加一條「如 npm install 出 SSL error，跑 <code>NODE_OPTIONS=--use-system-ca npm install</code>」。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<table>
+<tr><th>替代方案</th><th>揀咗咩</th><th>為何</th></tr>
+<tr><td><code>npm config set strict-ssl false</code></td><td><code>NODE_OPTIONS=--use-system-ca</code></td><td>strict-ssl=false 全 disable cert verify = silent vulnerability，違反 Karpathy rule「fix root cause not symptom」。--use-system-ca 用 Windows cert store（含 Norton root） = 真正 fix，verify 仍 enforced。</td></tr>
+<tr><td>Export Norton cert PEM + <code>NODE_EXTRA_CA_CERTS</code></td><td><code>NODE_OPTIONS=--use-system-ca</code></td><td>Cert export 每次 Norton 更新都要 redo（per Norton SSL memory note）。System-ca flag 自動跟 Windows store。Lazy 但 correct。</td></tr>
+<tr><td>Run tests (vitest)</td><td>Pre-class 唔 ship，留 Day 2 H3 候選</td><td>Test setup 加 dependency + 概念 overhead。Personal OS Level 2 教學員「先 ship 再加 test」嘅 iterative 思路，唔好一開始 over-engineer。</td></tr>
+</table>
+
+<h4>開放式問題</h4>
+<ul>
+<li><strong>Q4.1</strong>：Pre-class video 4:30-5:00 段「開課當日要 bring 咩」要唔要加一條「如 npm install SSL fail，跑 NODE_OPTIONS=--use-system-ca」？開課當日撞會時間爆。建議加。</li>
+<li><strong>Q4.2</strong>：而家 verify 只係 happy path (build + curl HTTP 200)。要唔要加：學員機 typical 環境 sanity check（測 Mac / Windows / Linux 三 OS）？我自己只測過 Windows 11。</li>
+</ul>
+
+<h2>Final Status + 開放式問題集中區</h2>
+
+<h4>SPEC 5 條全部 covered</h4>
+<table>
+<tr><th>SPEC #</th><th>Requirement</th><th>How shipped</th><th>Status</th></tr>
+<tr><td>1</td><td>前端用個人 os 做 base，要部署埋</td><td><code>dotai-personal-os/</code> Vite+React+TS+Tailwind 5-view scaffold + <code>npm run build</code> + <code>npm run preview</code> localhost:4173 prod bundle</td><td class="status-shipped">✅</td></tr>
+<tr><td>2</td><td>Database 用 Obsidian，設計入後端</td><td>Obsidian vault frontmatter (<code>tasks/</code> / <code>40 - Daily/</code> / <code>_drafts/</code>) → <code>sync-vault.mjs</code> Node + Obsidian MCP 兩條 path → <code>public/data/*.json</code> → frontend fetch</td><td class="status-shipped">✅</td></tr>
+<tr><td>3</td><td>GitHub 基礎教學</td><td><code>teaching/github-basics.md</code> mental model + 8 command + Codex 配 Git + <code>day-2/h1-git.md</code> 課堂 hour</td><td class="status-shipped">✅</td></tr>
+<tr><td>4</td><td>驗證完係 work 先算成功</td><td>npm install / sync / build / dev / preview 五條 command 跑成功 + curl smoke test HTTP 200 五個 JSON endpoint</td><td class="status-shipped">✅</td></tr>
+<tr><td>5</td><td>不涉及修改 code</td><td>Jimmy 既有 <code>jimmy-dashboard-app/</code> repo 0 修改；NEW scaffold 落 standalone <code>C:/Users/Kenneth/Claude/dotai-personal-os/</code></td><td class="status-shipped">✅</td></tr>
+</table>
+
+<h2>Phase 5：GitHub Push（2026-05-25 morning review session）</h2>
+<p class="status-shipped">✅ Shipped — public repo at <a href="https://github.com/kennethlaw325/dotai-personal-os">kennethlaw325/dotai-personal-os</a></p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>Folder 由 nested 變 standalone</strong>：由 <code>jimmy-dashboard-OS/level-2-skeleton/</code> 搬出嚟做 <code>C:/Users/Kenneth/Claude/dotai-personal-os/</code>。Cleaner mental model：1 個 folder = 1 個 repo，唔 nest 喺 fork 入面。</li>
+<li><strong>Repo visibility = public</strong>：學員 fork 直接，code 入面 0 secret。Sample-vault 都係 demo data 唔含 PII。</li>
+<li><strong>Repo name = dotai-personal-os</strong>（per Kenneth confirm，「dotai」= DotAI 品牌，「personal-os」= 描述）</li>
+<li><strong>Initial commit message</strong>：conventional commits format + 全 scaffold description + Claude attribution。Commit ID <code>61232a7</code>。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li><strong>Old <code>jimmy-dashboard-OS/level-2-skeleton/</code> folder 未刪</strong>：rm 撞 Windows「Device or resource busy」file handle lock，需要 Kenneth 重啟或關晒 editor 後手動 cleanup。屬於 fork untracked file，不影響 workflow。</li>
+</ul>
+
+<h2>Phase 6：Student Handbook（2026-05-25 morning）</h2>
+<p class="status-shipped">✅ Shipped — <code>STUDENT-HANDBOOK.md</code> repo root</p>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>單一 consolidated student-facing doc</strong>：將 13 個 instructor-side teaching file 合併做 1 個學生第二人稱 markdown handbook，學生 self-paced read。</li>
+<li><strong>Audience shift</strong>：由「老師示範...」/「TA 1:5...」/「完成標準: 學員 ship」改做「你會做...」/「你應該見到...」/「你嘅 next step」。</li>
+<li><strong>結構</strong>：呢個課程教你做咩 / pre-class checklist / Day 1 4hr / Day 2 4hr / 課後 deploy + 維護 / reference cheatsheet。~2000 行 single file，學員可以一路 read 或者 jump 章節。</li>
+<li><strong>原 instructor docs 保留</strong>：<code>teaching/</code> folder 13 file 唔刪，老師用嗰套；STUDENT-HANDBOOK 學生用。Dual-audience structure。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li>原計劃輸出 PDF / HTML / SCORM 等 multi-format，最終淨係 markdown — 學員 fork repo 用 VS Code / Codex Desktop / Obsidian 任何 markdown reader 都睇得到。Multi-format conversion 屬 post-ship task。</li>
+</ul>
+
+<h2>Phase 7：Vercel Deploy（SHIPPED 2026-05-29 17:50 HKT）</h2>
+<p class="status-shipped">✅ Shipped — production URL live + Basic Auth gate verified + SECURITY_HEADERS confirmed pass-through</p>
+<p><strong>Production URL</strong>：<code>https://dotai-personal-83baejcb5-kennethlaw325s-projects.vercel.app</code></p>
+<p><strong>Project</strong>：<code>kennethlaw325s-projects/dotai-personal-os</code>（id <code>prj_K7RXnfJX1DuWYr3wxq706SzXeOn3</code>）</p>
+
+<h4>實際做咗嘅嘢</h4>
+<ol>
+<li>Materialize <code>middleware.ts</code> 落 repo root（commit <code>d79a3e0</code>），add <code>@vercel/edge ^1.3.1</code> dep。typecheck pass。</li>
+<li>Vercel CLI login state <code>kennethlaw325</code> 已認證；<code>vercel link --yes --project dotai-personal-os</code> 創 project（GitHub auto-connect 失敗但 link OK）。</li>
+<li>Generate 20-char random password 經 PowerShell <code>RandomNumberGenerator.GetBytes</code> → base64 → 替換 special char → substring。Password 送 Discord 比 Kenneth 入 password manager。</li>
+<li>Set <code>SITE_PASSWORD</code> 入 Vercel env (production + development)。Preview 仍 pending Kenneth dashboard manual add（CLI 非 interactive 唔接受 preview branch confirm）。</li>
+<li><code>vercel deploy --prod --yes</code> deploy 出 <code>dpl_9TmXvxSPuFjhvFdckf5nbYiBFtJq</code>，跟住一條 redeploy <code>dpl_...83baejcb5</code> 因 env var 第一次入錯 BOM。</li>
+<li>撞 Vercel 內建 Deployment Protection（SSO）blocker — Kenneth dashboard toggle off「Vercel Authentication」之後我嘅 middleware 開始 receive 請求。</li>
+<li>5 curl verify：401 (no auth) / 200 (correct auth) / 401 (JSON no auth) / 200 (JSON correct auth) / 5 SECURITY_HEADERS 喺 401 同 200 都 confirm pass-through。</li>
+</ol>
+
+<h4>實作 vs spec 差異 / 偏離</h4>
+<ul>
+<li><strong>Password 第一次入錯 BOM / CRLF</strong>：PowerShell <code>Write-Output $pw | vercel env add</code> 將 UTF-16LE BOM + <code>\r\n</code> 送入 stdin。Vercel 將完整 byte stream 存做 env value → middleware 比對失敗。Workaround：用 Bash <code>printf '%s' "$PW" | vercel env add</code>，POSIX 唔加 BOM 唔加 newline。教訓記入 deploy-your-own.md FAQ 應該補返。<strong>Side incident</strong>：debug 過程中我 `vercel env pull .env.test` 將真 password + VERCEL_OIDC_TOKEN 落咗 local file。即刻 <code>rm -f .env.test</code> 刪走（file 從未 commit），但係 OIDC token 已被讀取喺呢個 session 內存 trace 入面 — token 有效期 12 hr，建議 Kenneth 等 token expire 過後再做敏感操作，或 rotate via <code>vercel logout && vercel login</code>。</li>
+<li><strong>Vercel SSO 撞牆</strong>：spec 完全冇預期 Vercel 2025+ 新 project default 開「Vercel Authentication: Standard Protection」— 即係 production deploy URL 都唔公開，要 OAuth via Vercel account。原 spec 假設 middleware 直接 first hop intercept 請求，實際 SSO 喺 middleware 之前 intercept。<strong>Mitigation</strong>：deploy-your-own.md Step 5 之前要加新 Step 4.5「Disable Vercel Authentication」步驟，否則學員部署後 Basic Auth gate 永遠唔生效，會誤以為自己 setup 啱晒。Phase 8.6 待做。</li>
+<li><strong>Preview env CLI 攔截</strong>：<code>vercel env add SITE_PASSWORD preview</code> 喺 non-interactive session 出 <code>hint: Run one of the commands in next[] to complete without prompting</code> reject。要 Kenneth dashboard 手動加，或者用 Vercel REST API。學員教材冇 cover — Phase 8.6 待加 dashboard step。</li>
+<li><strong>第二次 deploy URL 同第一次唔同</strong>：每次 <code>vercel --prod</code> 都 mint 新 deployment URL（<code>-83baejcb5</code> vs <code>-ormcn3kjq</code>），舊 deployment 唔自動刪，仍可 access。Phase 8.6 應該 <code>vercel rm</code> 第一次嗰條（password 錯嘅 deployment）reduce attack surface。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<ul>
+<li><strong>用 <code>@vercel/edge</code> 而唔係 raw <code>Response</code> pass-through</strong>：Q8.5.2 spec 已答 — 揀 <code>@vercel/edge</code> 因為佢係 Vercel 官方 helper，pass-through header propagation 行為 documented。<strong>Live verify：work</strong>。Vite SPA non-Next.js project 可以用 <code>next({ headers })</code>。Q8.5.2 ✅ resolved。</li>
+<li><strong>Production-only deploy 而唔等 Preview env 補齊</strong>：production 已 cover 主要 sharing scenario（同 Jimmy / 學員 demo）；preview deploy 學員自己 branch push 之後 fail-closed 返 500（SITE_PASSWORD missing），唔 leak vault data，安全 default。Kenneth 之後 30 秒 dashboard 加 preview env 解鎖。</li>
+<li><strong>不 rotate password</strong>：password 已喺 Discord 送過。Production 用緊嘅就係呢條，未公開未 leak 出 channel 外。如 Kenneth 想 rotate，<code>vercel env rm</code> + 重 add + redeploy。</li>
+</ul>
+
+<h4>新 open question（Phase 7 自身）</h4>
+<ul>
+<li><strong>Q7.1 ✅ Resolved 2026-05-29 20:40</strong>：Stable alias <code>https://dotai-personal-os.vercel.app</code> 已 set（Kenneth 拍板「教學期間開」）。Stable URL 5/5 checklist verify pass + 5 SECURITY_HEADERS confirm。課程後 30 秒 <code>vercel alias rm</code> 收返。</li>
+<li><strong>Q7.2 ✅ Resolved 2026-05-29</strong>：<code>dotai-personal-ormcn3kjq-...</code>（password 錯嘅老 deploy）已 <code>vercel rm</code>。剩低 active production = <code>dpl_...83baejcb5</code>，alias 指住佢。</li>
+<li><strong>Q7.3 ✅ Resolved 2026-05-29 → Phase 8.6 shipped (commit <code>01106b3</code>)</strong>：(a) Step 4.5 ✓、(b) PowerShell BOM FAQ + Preview env CLI rejection FAQ ✓、(c) <code>vercel rm</code> 老 deployment ✓。</li>
+</ul>
+
+<h2>Phase 8.6：Doc Patches + Fixture（SHIPPED 2026-05-29 commit <code>01106b3</code>）</h2>
+<p class="status-shipped">✅ Shipped — Phase 7 lived-experience knowledge fed back into teaching docs</p>
+
+<h4>實作</h4>
+<ul>
+<li><code>deploy-your-own.md</code> 新增 Step 4.5「🚨 關咗 Vercel Authentication」— 預防學員撞我 Phase 7 撞嘅 SSO blocker</li>
+<li><code>deploy-your-own.md</code> Step 5.1 status marker：由「⚠️ 未 verify」改「✅ production verified 2026-05-29」</li>
+<li><code>deploy-your-own.md</code> FAQ 新增：PowerShell <code>Write-Output</code> 入 vercel env 嘅 BOM 陷阱 + Preview env CLI 非互動 reject 嘅 dashboard workaround</li>
+<li><code>sample-vault/00 - Inbox/clipped-article.md</code> Q8.5.4 fixture ship — HTML comment 注入 + outbound markdown image，配 §3.1 injection demo + §3.3 audit demo</li>
+<li><code>security.md</code> §3.1 + §3.3 改 reference 真實 fixture path（原寫 <code>vault/raw/...</code> 改 <code>sample-vault/00 - Inbox/...</code>）</li>
+<li><code>prompts/security-prompts.md</code> Pattern 3 example path 同步更新</li>
+<li>Stable alias <code>https://dotai-personal-os.vercel.app</code> set up</li>
+<li>Old broken-password deployment <code>vercel rm</code></li>
+</ul>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>Fixture 觸發 audit P0 hit by design</strong>：<code>npm run security:audit</code> 跑 default 路徑會即時 catch fixture 入面 <code>https://attacker.example.com</code> outbound URL。原本 spec 預期「audit 預設 0 hit」，實際變「first run 1 P0 hit 係 teaching artifact」。改寫 §3.3 narrative 解釋呢個 by design。學員想 clean 嘅可以 (a) 移走 fixture，或 (b) audit script 嘅 <code>ALLOWED_OUTBOUND_HOSTS</code> 加 <code>example.com</code>。</li>
+<li><strong>Fixture 落 <code>00 - Inbox/</code> 而唔係 spec 提議嘅 <code>vault/raw/</code></strong>：對齊 Kenneth 真 vault 「Inbox = untrusted raw」convention，學員 mental model 一致。</li>
+</ul>
+
+<h2>Phase 8.7：Code Review Fixes（SHIPPED 2026-05-29 commit <code>d752d4e</code> + <code>9709245</code>）</h2>
+<p class="status-shipped">✅ Shipped — 11/11 review findings fixed + 24 unit tests + production re-deploy + alias re-point</p>
+
+<h4>觸發</h4>
+<p>Kenneth 跑 <code>/ecc:code-review</code> 對今日 6 commit 嘅 3 隻 code file（middleware.ts / security-audit.mjs / sync-vault.mjs）做 review。Decision = APPROVE with comments（0 CRITICAL / 0 HIGH / 4 MEDIUM / 7 LOW）。Kenneth 拍板「全部 fix」，即時 11/11 ship。</p>
+
+<h4>11 條 finding 對應 fix</h4>
+
+<table>
+<tr><th>ID</th><th>Severity</th><th>File</th><th>Fix</th></tr>
+<tr><td>M1</td><td>MEDIUM</td><td>middleware.ts:44</td><td>Constant-time password compare via manual bitwise loop（Edge runtime 冇 <code>crypto.timingSafeEqual</code>）— prevent timing-attack on per-char early exit</td></tr>
+<tr><td>M2</td><td>MEDIUM</td><td>sync-vault.mjs:34</td><td><code>ALLOW_REAL_VAULT</code> 改 strict opt-in（<code>=== '1'</code>），原本 <code>=0</code>/<code>=false</code> 都會 bypass 因為 string 係 truthy</td></tr>
+<tr><td>M3</td><td>MEDIUM</td><td>security-audit.mjs:29-60</td><td>Unify PATTERNS + SEVERITY 做單一 <code>RULES</code> catalog，加新 rule 唔會 drift</td></tr>
+<tr><td>M4</td><td>MEDIUM</td><td>scripts/security-audit.test.mjs (NEW)</td><td>24 unit tests via <code>node:test</code> 內建 module（zero deps）— RULES shape + 18 hit-or-miss + frontmatter skip + line number + escaped paren</td></tr>
+<tr><td>L1</td><td>LOW</td><td>middleware.ts:14-17</td><td>CSP <code>style-src 'unsafe-inline'</code> 保留 + inline comment 解釋（React JSX <code>style={{...}}</code> 編譯成 inline style attribute，tighten 會破 SPA UI）</td></tr>
+<tr><td>L2</td><td>LOW</td><td>middleware.ts:20</td><td>HSTS 加 <code>preload</code> directive，可 submit 上 HSTS preload list — live verify: <code>Strict-Transport-Security: max-age=31536000; includeSubDomains; preload</code></td></tr>
+<tr><td>L3</td><td>LOW</td><td>security-audit.mjs:77</td><td>Scan 加埋 <code>.markdown</code> extension（Obsidian / Logseq 變種）</td></tr>
+<tr><td>L4</td><td>LOW</td><td>security-audit.mjs:108-122</td><td>O(n) 一次 build line-offset index → binary-search O(log n) per match，由 O(n²) 改 O(n log n)</td></tr>
+<tr><td>L5</td><td>LOW</td><td>security-audit.mjs:44</td><td>URL 正則加 <code>\)</code> escape 接受，handle markdown URL 含 escaped close paren</td></tr>
+<tr><td>L6</td><td>LOW</td><td>sync-vault.mjs:33-46</td><td><code>realpath()</code> resolve symlink 之後先 regex test，防 <code>mklink /D</code> junction bypass</td></tr>
+<tr><td>L7</td><td>LOW</td><td>security-audit.mjs:88-96</td><td>Frontmatter <code>audit_skip: true</code> flag 跳過個別 file，俾教學 fixture 自選 opt-out audit noise</td></tr>
+</table>
+
+<h4>Bonus catch 喺 test 過程</h4>
+
+<ul>
+<li><strong>Bug 修正</strong>：原 <code>generic-secret-assign</code> regex <code>\b(OPENAI_KEY|...|PASSWORD)\s*=</code> 對 <code>SITE_PASSWORD=value</code> <strong>唔 work</strong>，因為 <code>_</code> 係 word char，<code>_</code> + <code>P</code> 之間冇 word boundary。改用 <code>(?&lt;![A-Za-z0-9])</code> negative lookbehind，而家 catch real-world <code>SITE_PASSWORD=</code> case。Test fixture 直接 cover 呢條 regression。</li>
+<li>Pre-existing audit script 對 production deployment 嘅 <code>SITE_PASSWORD</code> env value 喺 leak 都 catch 唔到（因為 process.env 唔入 vault），但本地 <code>.env</code> commit 嘅 case 而家 cover 到。</li>
+</ul>
+
+<h4>Verify 全 green</h4>
+
+<ul>
+<li><code>npm run typecheck</code> ✅</li>
+<li><code>npm test</code> — 24 / 24 pass</li>
+<li><code>npm run security:audit</code> — 1 P0 (fixture by design)</li>
+<li><code>npm run build</code> — 1.39s, 49.23 KB gzip</li>
+<li>Guard test <code>VAULT_DIR=...Desktop/Obsidian ALLOW_REAL_VAULT=0</code> → ✅ rejected</li>
+</ul>
+
+<h4>Production re-deploy</h4>
+
+<ul>
+<li>因 GitHub→Vercel auto-deploy webhook 未 wire（早前 link 撞 OAuth），手動跑 <code>vercel deploy --prod --yes</code></li>
+<li>新 deployment <code>dpl_...eamhrz75a</code> Ready</li>
+<li><code>vercel alias set</code> 將 <code>dotai-personal-os.vercel.app</code> 重指新 deployment</li>
+<li>老 <code>dpl_...83baejcb5</code> <code>vercel rm</code> 清走（hygiene）</li>
+<li>Live curl verify：401 no-auth / 200 correct auth / 200 /data path / HSTS preload directive present</li>
+</ul>
+
+<h4>新 open question（Phase 8.7 自身）</h4>
+<ul>
+<li><strong>Q8.7.1</strong>：Vercel auto-deploy from GitHub 點 wire？而家每次 commit 都要手動 <code>vercel deploy --prod</code>。要 wire 需要 dashboard Settings → Git → Connect GitHub repo（OAuth 步驟，要 Kenneth 親做）。建議 wire 咗，否則 spec ship 同 production drift 風險高。</li>
+<li><strong>Q8.7.2</strong>：CI 跑 <code>npm test</code>？而家 test 純本機跑，PR 唔 enforce。GitHub Actions YAML 加 5 行即 cover。要唔要做？</li>
+</ul>
+
+<h2>Phase 7 原 placeholder（已 obsolete）</h2>
+<p class="status-open" style="opacity: 0.5"><del>⏳ Pending — 需要 Kenneth 登入 Vercel 親自完成 import + env var + deploy</del></p>
+
+<h4>準備好嘅嘢</h4>
+<ul>
+<li>GitHub repo 已 push，URL ready for Vercel import</li>
+<li><code>deploy-your-own.md</code> + STUDENT-HANDBOOK「課後：自己 deploy」section 寫齊步驟</li>
+<li>Edge Middleware syntax 寫住 Vite SPA 版本，仍未 verified 落 Vercel（Kenneth accept as draft，「寫左先，之後會再實測」）</li>
+</ul>
+
+<h4>Kenneth 要做嘅 steps</h4>
+<ol>
+<li>登入 <a href="https://vercel.com">vercel.com</a>（用 GitHub OAuth）</li>
+<li>Add New → Project → Import <code>kennethlaw325/dotai-personal-os</code></li>
+<li>Build Command 保持 default <code>npm run build</code>（**唔好** 加 sync:vault）</li>
+<li>Settings → Environment Variables → 加 <code>SITE_PASSWORD</code></li>
+<li>Deploy → 攞 URL</li>
+<li>第一次撞 middleware error 嘅話跟 Vercel 提示安裝 <code>@vercel/edge</code> + 改 import</li>
+</ol>
+
+<h2>11 條 Open Question — Status Update</h2>
+
+<table>
+<tr><th>Q#</th><th>Question</th><th>Status</th><th>Resolution</th></tr>
+<tr><td>Q0.1</td><td>「不修改 code」interpretation</td><td class="status-shipped">✅ Confirmed</td><td>解讀啱：唔 hack Jimmy 原 repo，build NEW scaffold OK</td></tr>
+<tr><td>Q0.2</td><td>On-top 2 feature picks</td><td class="status-shipped">✅ Confirmed</td><td>Vault Health + Content Pipeline 接受</td></tr>
+<tr><td>Q0.3</td><td>8hr pacing OK?</td><td class="status-shipped">✅ Confirmed</td><td>OK，H1 唔拆 codebase 省咗 15min buffer + H4 加咗 30min deploy demo</td></tr>
+<tr><td>Q0.4</td><td>Sample vault entity 範圍</td><td class="status-shipped">✅ Confirmed</td><td>而家 4 類（tasks / daily / drafts / inbox）已夠，學員 H3 自加 reading list</td></tr>
+<tr><td>Q1.1</td><td>5 view default 太多?</td><td class="status-shipped">✅ Confirmed</td><td>OK 唔郁</td></tr>
+<tr><td>Q2.1</td><td>Obsidian Tasks plugin checkbox</td><td class="status-shipped">✅ Shipped</td><td>已加入 sync-vault.mjs，verified 9 tasks (5 frontmatter + 4 checkbox)</td></tr>
+<tr><td>Q2.2</td><td>Orphan scan cache (大 vault)</td><td class="status-open">⏳ Deferred</td><td>學員 vault 真係慢先優化</td></tr>
+<tr><td>Q3.1</td><td>Day 2 H3 1:5 TA ratio</td><td class="status-open">⏳ Watch-and-see</td><td>到時睇情況</td></tr>
+<tr><td>Q3.2</td><td>Pre-class video 5min 夠?</td><td class="status-shipped">✅ Resolved</td><td>取消 video 改用 <code>pre-class-checklist.md</code> 純 markdown — Kenneth pick A path</td></tr>
+<tr><td>Q4.1</td><td>Pre-class 加 Norton SSL?</td><td class="status-shipped">✅ Shipped</td><td>新 <code>pre-class-checklist.md</code> 已包獨立 Norton workaround section</td></tr>
+<tr><td>Q4.2</td><td>Cross-OS Mac/Linux verify</td><td class="status-shipped">✅ Shipped</td><td>所有教學 doc 已加 Mac/Linux 命令對應；real Mac 機 verify 未做（pending Kenneth 出現 Mac 學員時 test）</td></tr>
+</table>
+
+<h2>新發現 (2026-05-25 morning session)</h2>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>Deploy 唯一路徑 = real vault + 4-layer privacy</strong>：原本 deploy doc 寫「Choice A sample-only / Choice B real+privacy」雙路；Kenneth 確認單一路徑（真 vault data + 4 層保護），刪掉 demo-only path。</li>
+<li><strong>Vercel build command 修正</strong>：原本寫 <code>npm run sync:vault && npm run build</code> 係錯 — Vercel build machine 冇 vault file。正確 = 本機 sync → commit JSON → push → Vercel 只 build。已寫入 deploy doc + STUDENT-HANDBOOK。</li>
+<li><strong>VS Code → Codex Desktop 全程 IDE</strong>：原 pre-class 包 VS Code 安裝，Kenneth 確認 Codex Desktop 有 file output window + 內建 terminal 已足夠 IDE 角色。5 file sync 改晒。</li>
+<li><strong>H1 唔拆 codebase</strong>：原 H1 Step 5 「拆 codebase 15min」cut 走，學員 H3 / H4 touch code 自然見 structure。</li>
+<li><strong>H2 教 3 條讀 vault 路</strong>：原本主軸只教 MCP（setup overhead 高）；改做主軸路 1 直接讀 vault folder（0 setup），路 2 MCP / 路 3 CLI 做 teaser。</li>
+<li><strong>H3 用 reading list concrete example</strong>：原本講「vault frontmatter → JSON → React type 三層 coupling」抽象概念，改做完整 walk-through「我想加 reading list」具體做。</li>
+<li><strong>H4 移除「必然 error」framing</strong>：原本講 TS error 係必然 teaching moment，改做 ship 流程主軸 + contingency section 處理 error case。</li>
+</ul>
+
+<h2>Phase 8：資安 Mini-Section（2026-05-29，commit <code>6d5c895</code>）</h2>
+<p class="status-shipped">✅ Shipped — Day 2 H4 Step 0 加入 15-20 min 資安 mini-section（P0 only）</p>
+
+<h4>Spec 規定（Kenneth 2026-05-29 Discord 拍板）</h4>
+<ul>
+<li><strong>Scope</strong>：教 P0 + checklist（5 條 P0 紅線 + 5 步 deploy-time checklist），P1 / P2 留 post-class self-paced</li>
+<li><strong>Slot</strong>：Option A — 散入 Day 2 H4 Polish hour，15-20 min mini-section（唔開新 hour，唔切走 H4 半個鐘）</li>
+<li><strong>Deliverable 深度</strong>：老師版 <code>teaching/security.md</code> ~500 行 / 學生版加 STUDENT-HANDBOOK 一節 / <code>scripts/security-audit.mjs</code> + <code>.gitignore</code> patch + <code>middleware.ts</code> template 加 <code>VERCEL_ENV</code> branch + headers + pre-class-checklist 資安準備節</li>
+</ul>
+
+<h4>設計決策</h4>
+<ul>
+<li><strong>P0 5 條來源</strong>：直接採用 <code>_drafts/security-risk-analysis.md</code> v2 列嘅 P0 分類（B1+B3 vault 全 sync / A1+A2 secret leak / X1 prompt injection / D6 preview URL bypass / X4 exfil cycle），唔再 re-derive — draft 已 cover 攻擊面 framework，無需重複分析工作。</li>
+<li><strong>15-20 min 落點 = Step 0 而唔係 step 中段</strong>：H4 原 4 step（polish / demo / Q&A / Level 3 teaser）資安插落 Step 0，學員未 polish 之前就建立 security mental model，polish 同 demo 期間順手跑 audit。Step 1 polish + Step 2 demo 各縮 5 min 補時間（60 min hour 守恆）。</li>
+<li><strong>Allow-list 而唔係 deny-list</strong>：sync-vault.mjs 紅線 #1 mitigation 用 allow-list（明確列邊個 folder 入 JSON）— deny-list 永遠漏網，allow-list default deny 啱 fail-closed principle。</li>
+<li><strong>Audit script exit code 1 only on P0</strong>：P1（email / phone / outbound link）warn 但唔 block ship，P0（secret / outbound image / HKID）block。理由：學員 Day 2 ship 前唔可以畀 false alarm 阻住 happy path；email pattern 撞到 sample vault 內合法 inbox content 太常見。</li>
+<li><strong>Middleware fail-closed on missing env var</strong>：<code>SITE_PASSWORD</code> undefined → 500，<code>VERCEL_ENV</code> 非 production/preview → 403。原 deploy template fail-open（env var 漏 = 直接放行），紅線 #4 嘅根因。</li>
+<li><strong>CSP / HSTS / X-Frame-Options 寫入 401 response header 而唔係 middleware passthrough</strong>：Vercel Edge Middleware 對 passthrough response 加 header 嘅 syntax 喺 non-Next.js project 仍未 verify，所以 SECURITY_HEADERS 只保證 401 path 套到，pass-through path 留俾 Phase 7 Vercel 實測之後再 iterate。已喺 security.md §1 紅線 #5 + middleware template inline comment 標出呢個 limitation。</li>
+<li><strong>3 條 demo 揀（prompt injection + preview URL bypass + audit script）</strong>：cover 5 條紅線入面最唔直觀嘅 3 條。Vault 全 sync (#1) 同 secret leak (#2) 學員直覺理解，唔需要台前 demo。Exfil cycle (#5) 需要 webhook 接收器搭建太複雜，留 §8 老師時間分配「剩 10 min」場景跌走。</li>
+<li><strong>Pre-class checklist 加 3 樣（password manager / Secret Scanning / Codex sandbox confirm），唔加 Norton SSL 級別嘅長 step</strong>：呢 3 樣每樣 30 秒 - 1 min，學員 self-paced 完成；Day 2 H4 mini-section 唔再洗時間教 setup。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li><strong>P1 / P2 一律 cut</strong>：原 draft 列 17 條（5 P0 + 5 P1 + 7 P2），mainline 只取 5 P0。Kenneth 5/29 確認「教 P0+checklist」。 P1 / P2 留 <code>_drafts/security-risk-analysis.md</code>（連同 commit 一齊 push 上 GitHub），future Level 3 / self-paced reference。</li>
+<li><strong>原 draft 提議「老師版 1200-1500 行」未跟</strong>：mainline <code>security.md</code> 470 行（~1/3），cut 走全 layer 拆解、5 mitigation 詳寫、coverage 自評等 meta content，淨係留可直接落堂講 + checklist + demo + cheatsheet。理由：mini-section 只 15-20 min，老師唔會 read 1500 行 lesson note 上堂。</li>
+<li><strong>學生版冇做 250-300 行</strong>：實際 STUDENT-HANDBOOK 「資安」節約 200 行（5 紅線 + checklist + incident playbook + 7 必做/必避 cheat card），cut 走 framing prose 重複內容（學生 just-in-time reference card 用，唔係 textbook）。</li>
+<li><strong>middleware.ts pass-through path 暫時冇套 SECURITY_HEADERS</strong>：技術原因見上「設計決策」第 6 條，標明係 Phase 7 verify 之後 iterate。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<ul>
+<li><strong>Option A vs B vs C slot 選擇</strong>：Option A（散入 H4 polish 15-20 min）比 Option B（切 H4 半個鐘專門教 + deploy 縮 30 min）淺一級但唔影響其他 step；比 Option C（開新 H5 拉 4.5hr）省 30 min 總時間 + 唔需要 re-align Jimmy。代價：prompt injection 同 exfil cycle 講唔深，學員可能 mental model 唔夠紮實。緩解：incident playbook + audit script 兜底 — 即使 mental model 模糊都會跑 5 步 checklist。</li>
+<li><strong>Audit script 用 regex 而唔係 AST / proper parser</strong>：Markdown image / link 用 regex 解析有 edge case（nested brackets / escaped char），但 false positive 對 audit 嚟講係 acceptable（人手 review 過濾），false negative 先係問題。Regex covers 95% case 已夠 Day 2 H4 teaching 用；學員想要 robust 版可以 Level 3 改用 marked AST visitor。</li>
+<li><strong>Mainline 一次 ship vs phased rollout</strong>：考慮過 Phase 8a「先 ship security.md + audit script」+ Phase 8b「再 ship handbook + middleware hardening + pre-class」拆兩 commit。揀單一 commit 因為 6/11 Webinar / 6/25 Level 1 deadline 緊，後續無 iteration window；拆 commit 反而增加遺漏風險。</li>
+<li><strong>實際跑 audit verify 用 sample-vault vs 故意藏 P0 hit 嘅 test fixture</strong>：揀 sample-vault clean run（✅ 0 hit 確認 script 唔誤殺），冇 build test fixture 故意藏 secret pattern verify catch 率。理由：sample-vault clean 已 prove script 起得到；catch 率 demo 3.3 上堂老師示範時即場注入 fixture，唔需要 commit 入 repo。</li>
+<li><strong>Allow-list pattern 教學員手寫 vs 預設喺 sync-vault.mjs</strong>：security.md 紅線 #1 只教 pattern + 反例，唔改 sync-vault.mjs 加 ALLOWED_FOLDERS const。理由：原 sync-vault.mjs 係 Phase 2 教學 deliverable，學員 Day 1 H3 已 walk through；改 production code 會引入新 mental model 衝突。學員 ship 前手動加 allow-list 係 mini-section take-away action。</li>
+</ul>
+
+<h4>開放式問題 — Resolved 2026-05-29 17:30 HKT（Kenneth 拍板，pending implementation）</h4>
+<ul>
+<li><strong>Q8.1 ✅ Resolved</strong>：3 條 demo 落堂揀 <strong>B（injection + audit script）</strong>。Injection = conceptual centerpiece（新興攻擊 + 知識門檻最高）必教；audit script 一條 <code>npm run</code> 建立 daily habit。Preview bypass demo 需老師預備 broken-middleware Vercel project，搭建成本高 + 課堂執行風險，改用 §5 incident playbook 講代替。<em>Action</em>：security.md §8 時間分配 update 推薦組合 → B。</li>
+<li><strong>Q8.2 ✅ Resolved</strong>：middleware.ts 寫 <strong>best-guess pass-through SECURITY_HEADERS</strong>，唔等 Phase 7 verify。Defense-in-depth 完整過冇；第一次 deploy 撞 syntax error 嘅 friction 同 status quo 一樣（FAQ 已寫「跟 Vercel 提示」）。<em>Action</em>：deploy-your-own.md middleware template pass-through path 改用 <code>Response</code> rewrite pattern set headers，附 inline comment「Vite SPA 版未 verify」。</li>
+<li><strong>Q8.3 ✅ Resolved</strong>：做 <strong>Phase 8.5</strong> 寫 <code>teaching/prompts/security-prompts.md</code>（~50 行）。用 prompt-embedded preamble template（唔依賴 Responses API system field — Codex CLI 唔保證 expose）+ Codex Desktop <code>AGENTS.md</code> pattern，跨 platform work。Cover 紅線 #3 mitigation。Cost ~10 min。</li>
+<li><strong>Q8.4 ✅ Resolved</strong>：<code>npm run security:audit</code> default scan path 加 <code>vault/</code>。<code>walk()</code> 已 ENOENT silent skip，無 vault folder 唔會 break。3 條 default path = <code>public/data</code> + <code>sample-vault</code> + <code>vault</code>。Zero downside，cover 學員 Day 1 H3 import 自己 vault 之後嘅 scan need。</li>
+<li><strong>Q8.5 ✅ Resolved</strong>：<strong>唔加 disclaimer</strong>。<code>_drafts/security-risk-analysis.md</code> 開頭已寫「Status：planning doc，未入 teaching/ 主線」；<code>_drafts/</code> folder 名本身已 self-explanatory。再加 = noise。</li>
+</ul>
+
+<h2>Phase 8.5：Q8.1-Q8.5 Implementation（SHIPPED 2026-05-29 18:00 HKT）</h2>
+<p class="status-shipped">✅ Shipped — 6/6 step 完成，audit + handbook regen verify pass</p>
+
+<h4>實作 vs 規定差異</h4>
+<ul>
+<li><strong>Q8.2 middleware import 加 <code>@vercel/edge</code> 嘅 <code>next()</code> helper</strong>：原 spec 寫「Response rewrite pattern set headers」，實際揀 <code>next({ headers })</code> 因為 Vercel Edge runtime 對 raw <code>Response</code> 加 pass-through header 嘅 syntax 喺 non-Next.js project 比 <code>@vercel/edge</code> helper 更唔穩定。<code>@vercel/edge</code> 係 Vercel 官方 package（同 deploy-your-own.md FAQ 已提及嘅 fallback 一致），冇 added 學員 install cost — Vercel build 自動 detect import。</li>
+<li><strong>Q8.3 prompts/security-prompts.md 寫到 90+ 行而唔係 spec 估嘅 ~50</strong>：實際拆 3 個 pattern（embedded preamble / AGENTS.md / 高危 task explicit guard）+ 教學示範流程 + reference index。Spec 低估 — Pattern 1 同 2 trade-off 同失效 case 需要解釋清楚，否則學員「為咩兩個都寫」會困惑。</li>
+<li><strong>Q8.1 demo 改寫順手 update §3.1 mitigation block</strong>：原 spec 只講「§8 推薦組合改寫」，但實際發現 §1 紅線 #3 mitigation 仲寫住「Codex prompt 加 system-level instruction」呢句，cross-reference 唔到新 security-prompts.md。順手改埋 §1 紅線 #3 mitigation 第二條指返 prompts/security-prompts.md Pattern 1/2。</li>
+</ul>
+
+<h4>偏離情況</h4>
+<ul>
+<li><strong>STUDENT-HANDBOOK 同步只加 1 句</strong>：spec 估「同步 + regen」可能要改多處，實際 handbook 紅線 #3 mitigation block 加 1 行 cross-reference `teaching/prompts/security-prompts.md` 已 cover Q8.3 變化。其他 section 唔涉 prompts 配置細節，避免重複。</li>
+<li><strong>Demo §3.2 preview bypass 完整保留</strong>：原 spec 寫「preview bypass demo 移落 §5 incident playbook 文字敘述」。實際睇返 §3.2 已寫得好詳細（5 min 老師台前 demo 完整 script），刪走會浪費 future Level 3 / 老師 self-study 嘅 reference value。改做 §8 表格只標明「揀 #3.1 + #3.3」+ §5 incident playbook 多 walk 紅線 #4。§3.2 留俾老師背景知識用。</li>
+</ul>
+
+<h4>價值取捨</h4>
+<ul>
+<li><strong>Pattern 1 vs Pattern 2 教邊個做主</strong>：考慮過淨教 Pattern 2 (`AGENTS.md`) 因為 setup 一次永久 work，最 ergonomic。揀 Pattern 1 (embedded preamble) 做 §1 紅線 #3 主 mitigation，因為 (a) Codex Desktop 對 `AGENTS.md` 嘅 auto-load 行為未 verify 100% reliable，(b) Pattern 1 跨 platform（學員 swap Cursor / Cline / Aider 都用），(c) Pattern 2 列做「持久化升級版」。Layered defence > 押注單一 pattern。</li>
+<li><strong>Audit script vault/ default 加唔加 .gitignore-respecting</strong>：考慮過讓 script `ignore` `.gitignore`，即係 `vault/` 喺 `.gitignore` 入面就 skip。揀唔加 — 因為 audit 嘅目的就係 catch 本地 secret 喺 vault 入面（即使 git ignore 咗），漏掃就 defeat 個 point。Trade-off：學員可能驚 script 「掃我私人 note」，文檔 §6 已寫明 scope = 只 detect secret pattern + outbound URL，唔抽 note body。</li>
+<li><strong>Single commit vs 拆 commit</strong>：Q8.5.1 我建議單 commit，實際 ship 跟咗單 commit「feat: Phase 8.5 implement Q8.1-Q8.5 from security mini-section review」，理由：6 步 deterministic 互相 reference，拆 commit 反而 build:handbook regen 步 commit `STUDENT-HANDBOOK.md` 唔 sync 到 handbook.html，causing intermediate state 唔 reproducible。</li>
+</ul>
+
+<h4>開放式問題（Phase 8.5 自身）</h4>
+<ul>
+<li><strong>Q8.5.2 ✅ Resolved 2026-05-29 (Phase 7 live verify)</strong>：<code>@vercel/edge</code> <code>next({ headers })</code> 喺 Vite SPA non-Next.js project work — production curl confirm 200 response 帶埋 5 條 SECURITY_HEADERS (CSP / HSTS / X-Frame-Options / X-Content-Type-Options / Referrer-Policy) propagate 落下游。Fallback path 唔需要用。</li>
+<li><strong>Q8.5.3</strong>：`AGENTS.md` 喺 repo root vs `dotai-personal-os/AGENTS.md` 嘅 Codex Desktop auto-load behavior，我寫 `repo root` 預設，但 Codex Desktop 實際讀邊個 path 我冇 verify。要唔要 pre-class checklist 加一步「學員第一日問 Codex Desktop where do you load AGENTS.md from?」？</li>
+<li><strong>Q8.5.4</strong>：security-prompts.md Pattern 3「高危 task explicit guard」我寫 example 用 `vault/raw/clipped-article.md`，但唔係 sample-vault file。要唔要 sample-vault 加一條 fake clipped article 配合 Day 2 §3.1 demo + Pattern 3 reference？</li>
+</ul>
+
+<h4>待做嘅 6 步（依序）</h4>
+<ol>
+<li><strong>Middleware template hardening (Q8.2)</strong> — <code>teaching/deploy-your-own.md</code> middleware.ts template pass-through path 改用 <code>Response</code> rewrite pattern set <code>SECURITY_HEADERS</code>，inline comment 標「Vite SPA 版未 Phase 7 verify」。~5 min。</li>
+<li><strong>Audit script default path (Q8.4)</strong> — <code>scripts/security-audit.mjs</code> <code>SCAN_PATHS</code> default array 加 <code>'vault'</code>。~2 min。</li>
+<li><strong>Security prompts (Q8.3)</strong> — 新增 <code>teaching/prompts/security-prompts.md</code>（~50 行）：anti-injection preamble template + Codex Desktop <code>AGENTS.md</code> 配置 example。Cross-reference 入 <code>security.md</code> 紅線 #3 mitigation。~10 min。</li>
+<li><strong>Security.md §8 demo 推薦改寫 (Q8.1)</strong> — 把推薦組合由「injection + preview bypass」改做「injection + audit script」；preview bypass demo 移落 §5 incident playbook 文字敘述。~3 min。</li>
+<li><strong>STUDENT-HANDBOOK 同步</strong> — 如 §3 提及 demo 揀法或 prompts/security-prompts.md 引用，同步更新。<code>npm run build:handbook</code> regen。~3 min。</li>
+<li><strong>Implementation-notes.html Phase 8.5 status</strong> — 由 PENDING 改 SHIPPED，加 commit hash。~2 min。</li>
+</ol>
+
+<h4>為咩拆 Phase 8 + Phase 8.5 而唔係再 amend Phase 8</h4>
+<ul>
+<li>Phase 8 (commit <code>6d5c895</code>) 已 push public repo — amend 會 force-push rewrite history，違反 CLAUDE.md「create new commits rather than amending」。</li>
+<li>Phase 8.5 屬「resolved open question follow-through」，自然成獨立 commit 利於 future audit / blame。</li>
+<li>Phase 8.5 step 1-6 全部 deterministic（spec 已 lock 由 Q8.1-Q8.5 resolution），可一氣呵成 commit，無需 mid-phase decision gate。</li>
+</ul>
+
+<h4>新 open question（Phase 8.5 自身）</h4>
+<ul>
+<li><strong>Q8.5.1</strong>：Phase 8.5 6 步邊個 commit boundary — 全部一 commit，定 Q8.2/8.4 (code) vs Q8.3 (新 file) vs Q8.1 (doc) 分 3 commit？我建議單 commit「feat: address Q8.1-Q8.5 from security mini-section review」最簡，但如 Kenneth 想 PR-style logical separation 可拆。</li>
+</ul>
+
+<p style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #e6edf5; color: #66758a; font-size: 0.85rem;">
+Generated 2026-05-25 HKT. <strong>Updated 2026-05-29 22:40 HKT</strong> — Phase 1-7 + 8 + 8.5 + 8.6 + 8.7 ALL SHIPPED. Stable URL: <code>https://dotai-personal-os.vercel.app</code> repointed to <code>dpl_...eamhrz75a</code> with 11/11 review fixes + 24 unit tests. All open Q resolved except Q8.5.3 (AGENTS.md verify pending) + Q8.7.1 (Vercel auto-deploy webhook) + Q8.7.2 (CI test). 64 file in repo + scripts/security-audit.test.mjs (新, 24 tests).
+</p>
+
+</body>
+</html>

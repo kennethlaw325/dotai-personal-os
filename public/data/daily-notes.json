@@ -1,0 +1,18 @@
+[
+  {
+    "date": "2026-05-23",
+    "content": "# 2026-05-23 Daily\n\n## Reflection\n\n5/22 punch list 留低嘅 follow-up #3 收尾。三條 ContentDeck PR 全 squash merge。GlowLab carousel 排版 spec tighten 解答完。"
+  },
+  {
+    "date": "2026-05-24",
+    "content": "# 2026-05-24 Daily\n\n## Reflection\n\n朝早撞 Discord 400 hotfix → Architecture B 切換成功；下午一連 ship Phase 2/3/4/5 + 週日 Pipeline wire；evening 同 Karen Lai align GlowLab campaign dashboard 架構。"
+  },
+  {
+    "date": "2026-05-25",
+    "content": "# 2026-05-25 Daily\n\n## Today's Plan\n\n排序入 frontmatter `task_ids` 由 sync script 拎；同事亦可以用 `[[t-001]]` 寫 inline 由 script regex 食。\n\n## Reflection\n\n朝早 8:00 第一次 ContentDeck 每日巡查 auto-fire 觀察 — Section 1 sparkline + 過時筆記 alert 有冇 surface 真嘢。內容排程系統 Phase 1 落地 14 日 re-eval gate 6/8 倒數中。\n\n## Inline checkbox tasks（Obsidian Tasks plugin syntax）\n\n- [ ] Email Karen Lai confirm GlowLab campaign 上線 review feedback\n- [/] 整理 GlowLab 拍攝 reference 圖庫 demo prep\n- [x] Push dotai-personal-os 第一條 commit 上 GitHub\n- [ ] 視乎客戶 confirm 再加 pre-shoot checklist 改動"
+  },
+  {
+    "date": "2026-05-26",
+    "content": "# 2026-05-26 Daily\n\n## Today's Plan\n\n由 frontmatter `task_ids` 拎（Today view 顯示呢 3 件 focus）；亦可以 inline `[[t-001]]` 由 script regex 食。\n\n## Reflection\n\nGlowLab carousel 今日一定要交。GlowLab campaign confirm 緊預算。Velora 等緊 launch deck feedback。Kaito Ramen 好耐冇 touch，要 CRM 提我跟。\n\n## Inline checkbox tasks（Obsidian Tasks plugin syntax）\n\n- [ ] Send GlowLab pre-shoot checklist + 場地/燈光需求\n- [ ] 出 GlowLab 5 月正式 invoice\n- [/] Draft GlowLab campaign 第一階段 agenda\n- [x] 整理 5/26 會議 raw notes 入 Inbox"
+  }
+]

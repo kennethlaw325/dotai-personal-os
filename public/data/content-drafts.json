@@ -1,0 +1,37 @@
+[
+  {
+    "id": "d-fb-001",
+    "title": "Kaito Ramen 新店開幕 FB 帖",
+    "platform": "facebook",
+    "status": "drafting",
+    "updatedAt": "2026-05-24T11:00:00.000Z"
+  },
+  {
+    "id": "d-ig-001",
+    "title": "GlowLab 淺色調護膚 carousel",
+    "platform": "ig",
+    "status": "published",
+    "updatedAt": "2026-05-22T08:00:00.000Z"
+  },
+  {
+    "id": "d-threads-001",
+    "title": "海巷工作室 5 月作品回顧",
+    "platform": "threads",
+    "status": "idea",
+    "updatedAt": "2026-05-24T17:00:00.000Z"
+  },
+  {
+    "id": "d-x-001",
+    "title": "小品牌做 KOL campaign 嘅 3 個伏",
+    "platform": "x",
+    "status": "idea",
+    "updatedAt": "2026-05-21T02:00:00.000Z"
+  },
+  {
+    "id": "d-xhs-001",
+    "title": "5 个护肤误区你中了几个",
+    "platform": "xhs",
+    "status": "review",
+    "updatedAt": "2026-05-23T14:00:00.000Z"
+  }
+]
