@@ -97,7 +97,7 @@ main();
 直接 output 段 text，唔好寫 code。
 ```
 
-呢個就係 Kenneth `vault-lint-daily.ps1` Morning Brief 嘅 simplified 版。
+呢個就係一個真實 morning-brief 自動化嘅 simplified 版。
 
 ### Step 4 — Wire 入 dashboard (10 min)
 

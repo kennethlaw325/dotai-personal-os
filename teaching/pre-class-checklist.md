@@ -102,7 +102,7 @@ $env:NODE_OPTIONS="--use-system-ca"; npm install
 開 Codex Desktop 之後，你會用到：
 
 1. **New chat** — Cmd/Ctrl+N 開新對話
-2. **Switch model** — 揀 Claude / GPT model（default 由 Jimmy / Kenneth 推薦）
+2. **Switch model** — 揀 Claude / GPT model（default 由老師推薦）
 3. **`@cwd <folder>`** — 設 working directory 比 Codex 識讀，Day 1 H1 開始用
 4. **Drag-drop file** — 直接拖 file 入 chat 做 context
 5. **Settings → MCP** — 入面睇 connected MCP server 列表，Day 1 H2 會 add Obsidian MCP

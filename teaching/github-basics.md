@@ -20,7 +20,7 @@
 
 ```bash
 # 1. Clone / fork
-gh repo fork jimmylau-DOTAI/jimmy-dashboard-OS --clone
+gh repo fork kennethlaw325/dotai-personal-os --clone
 
 # 2. Status — 任何時候唔知做緊咩，先跑呢條
 git status
@@ -78,10 +78,10 @@ git switch main && git pull
 
 ```bash
 git remote -v
-# origin     https://github.com/<你>/jimmy-dashboard-OS.git  (fetch)
-# origin     https://github.com/<你>/jimmy-dashboard-OS.git  (push)
-# upstream   https://github.com/jimmylau-DOTAI/jimmy-dashboard-OS.git  (fetch)
-# upstream   https://github.com/jimmylau-DOTAI/jimmy-dashboard-OS.git  (push)
+# origin     https://github.com/<你>/dotai-personal-os.git  (fetch)
+# origin     https://github.com/<你>/dotai-personal-os.git  (push)
+# upstream   https://github.com/kennethlaw325/dotai-personal-os.git  (fetch)
+# upstream   https://github.com/kennethlaw325/dotai-personal-os.git  (push)
 ```
 
 - `origin` = 你 fork 嘅 repo（你 push 去呢度）
